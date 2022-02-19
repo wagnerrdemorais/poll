@@ -1,10 +1,10 @@
-package com.wagnerrdemorais.pool;
+package com.wagnerrdemorais.poll;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PoolApplicationTests {
+class PollApplicationTests {
 
     @Test
     void contextLoads() {

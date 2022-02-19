@@ -1,18 +1,21 @@
-package com.wagnerrdemorais.pool.form;
+package com.wagnerrdemorais.poll.controller.form;
 
-import com.wagnerrdemorais.pool.model.Poll;
-import com.wagnerrdemorais.pool.model.PollOption;
+import com.wagnerrdemorais.poll.model.Poll;
+import com.wagnerrdemorais.poll.model.PollOption;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class used for receiving Polls in Controller
+ */
 public class PollForm {
 
     Long id;
     String title;
     String description;
-    List<PoolOptionForm> optionList = new ArrayList<>();
+    List<PollOptionForm> optionList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -38,14 +41,18 @@ public class PollForm {
         this.description = description;
     }
 
-    public List<PoolOptionForm> getOptionList() {
+    public List<PollOptionForm> getOptionList() {
         return optionList;
     }
 
-    public void setOptionList(List<PoolOptionForm> optionList) {
+    public void setOptionList(List<PollOptionForm> optionList) {
         this.optionList = optionList;
     }
 
+    /**
+     * Converts PollForm to Poll object
+     * @return Poll
+     */
     public Poll toEntity() {
         List<PollOption> optionList = this.optionList.stream()
                 .map(pof -> new PollOption(pof.getId(), pof.getTitle(), pof.getVoteCount()))

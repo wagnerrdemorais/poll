@@ -1,10 +1,13 @@
-package com.wagnerrdemorais.pool.model;
+package com.wagnerrdemorais.poll.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * PollOption database entity
+ */
 @Entity
 public class PollOption {
 
@@ -16,9 +19,18 @@ public class PollOption {
 
     private int voteCount;
 
+    /**
+     * No args Constructor
+     */
     public PollOption() {
     }
 
+    /**
+     * All args Constructor
+     * @param id Long
+     * @param title String
+     * @param voteCount int
+     */
     public PollOption(Long id, String title, int voteCount) {
         this.id = id;
         this.title = title;

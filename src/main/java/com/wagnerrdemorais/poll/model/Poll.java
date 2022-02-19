@@ -1,9 +1,12 @@
-package com.wagnerrdemorais.pool.model;
+package com.wagnerrdemorais.poll.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Poll database entity
+ */
 @Entity
 public class Poll {
 
@@ -15,12 +18,26 @@ public class Poll {
 
     private String description;
 
+    /**
+     * A Poll can have multiple PollOption values, but the PollOption must have only one Poll
+     */
     @OneToMany(cascade = CascadeType.ALL)
     private List<PollOption> optionList = new ArrayList<>();
 
+    /**
+     * No args constructor
+     */
     public Poll() {
     }
 
+    /**
+     * All args constructor
+     *
+     * @param id          Long
+     * @param title       String
+     * @param description String
+     * @param optionList  List<PollOption>
+     */
     public Poll(Long id, String title, String description, List<PollOption> optionList) {
         this.id = id;
         this.title = title;
@@ -55,5 +72,6 @@ public class Poll {
     public void setOptionList(List<PollOption> optionList) {
         this.optionList = optionList;
     }
+
 }
 

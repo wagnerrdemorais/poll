@@ -1,6 +1,9 @@
-package com.wagnerrdemorais.pool.form;
+package com.wagnerrdemorais.poll.controller.form;
 
-public class PoolOptionForm {
+/**
+ * Used for receiving PollOptions in Controller
+ */
+public class PollOptionForm {
 
     private Long id;
 

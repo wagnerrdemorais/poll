@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.wagnerrdemorais</groupId>
-    <artifactId>pool</artifactId>
+    <artifactId>poll</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>pool</name>
-    <description>pool</description>
+    <name>poll</name>
+    <description>poll</description>
     <properties>
         <java.version>11</java.version>
     </properties>

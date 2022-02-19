@@ -1,13 +1,13 @@
-package com.wagnerrdemorais.pool;
+package com.wagnerrdemorais.poll;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PoolApplication {
+public class PollApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PoolApplication.class, args);
+        SpringApplication.run(PollApplication.class, args);
     }
 
 }

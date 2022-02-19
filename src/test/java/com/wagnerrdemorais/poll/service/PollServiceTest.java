@@ -12,8 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PollServiceTest {
@@ -42,8 +41,8 @@ class PollServiceTest {
         mockRepoFindAll();
         mockRepoGetById();
         mockRepoSave();
-        mockRepoDelete();
         mockRepoDeleteById();
+        mockRepoExistsById();
     }
 
     @Test
@@ -91,7 +90,7 @@ class PollServiceTest {
         assertEquals(pollToSave, pollById);
         assertEquals(3L, subject.getPollList().size());
 
-        subject.deletePoll(pollById);
+        subject.deleteById(5L);
         assertEquals(2L, subject.getPollList().size());
 
         Poll pollById1 = subject.getPollById(5L);
@@ -99,6 +98,12 @@ class PollServiceTest {
 
         subject.deleteById(1L);
         assertEquals(1L, subject.getPollList().size());
+    }
+
+    @Test
+    void existsById() {
+        assertTrue(subject.pollExistsById(1L));
+        assertFalse(subject.pollExistsById(3L));
     }
 
     private void mockRepoFindAll() {
@@ -120,19 +125,18 @@ class PollServiceTest {
         });
     }
 
-    private void mockRepoDelete() {
-        doAnswer(invocationOnMock -> {
-            Poll poll = (Poll) invocationOnMock.getArguments()[0];
-            pollMap.remove(poll.getId());
-            return null;
-        }).when(pollRepository).delete(Mockito.any(Poll.class));
-    }
-
     private void mockRepoDeleteById() {
         doAnswer(invocationOnMock -> {
             Long id = (Long) invocationOnMock.getArguments()[0];
             pollMap.remove(id);
             return null;
         }).when(pollRepository).deleteById(Mockito.anyLong());
+    }
+
+    private void mockRepoExistsById() {
+        when(pollRepository.existsById(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
+            Long argument = (Long) invocationOnMock.getArguments()[0];
+            return pollMap.containsKey(argument);
+        });
     }
 }

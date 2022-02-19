@@ -52,4 +52,37 @@ public class PollController {
         return ResponseEntity.ok(pollDto);
     }
 
+    /**
+     * Put endpoint, receives a PollForm, updates it if found,
+     * and returns the updated Dto, else, responds with badRequest
+     * @param poll PollForm
+     * @return ResponseEntity<PollDto>
+     */
+    @PutMapping("/update")
+    public ResponseEntity<PollDto> updatePoll(@RequestBody PollForm poll) {
+        if (poll.getId() == null || !pollService.pollExistsById(poll.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Poll updatedPoll = pollService.savePoll(poll.toEntity());
+        PollDto pollDto = PollDto.fromEntity(updatedPoll);
+        return ResponseEntity.ok(pollDto);
+    }
+
+    /**
+     * Delete endpoint, receives a Poll id, removes it if found,
+     * else, responds with badRequest
+     * @param id Long
+     * @return ResponseEntity<String>
+     */
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deletePollById(Long id) {
+        if (id == null || !pollService.pollExistsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        pollService.deleteById(id);
+        return ResponseEntity.ok("Poll deleted!");
+    }
+
 }

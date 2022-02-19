@@ -27,12 +27,11 @@ public class PollService {
         return this.pollRepository.save(poll);
     }
 
-    public void deletePoll(Poll poll) {
-        this.pollRepository.delete(poll);
-    }
-
     public void deleteById(Long id) {
         this.pollRepository.deleteById(id);
     }
 
+    public boolean pollExistsById(Long id) {
+        return this.pollRepository.existsById(id);
+    }
 }

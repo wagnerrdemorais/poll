@@ -5,24 +5,28 @@ import com.wagnerrdemorais.poll.model.PollOption;
 import com.wagnerrdemorais.poll.repository.PollRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.*;
 
 class PollServiceTest {
 
     PollService subject;
     PollRepository pollRepository;
-    Map<Long, Poll> pollMap;
+    Map<Long, Poll> pollMap = new LinkedHashMap<>();
 
     @BeforeEach
     void setUp() {
         pollRepository = Mockito.mock(PollRepository.class);
 
-        pollMap = Map.of(
+        pollMap.putAll(Map.of(
                 1L,
                 new Poll(1L, "Poll1", "Poll1 Description",
                         List.of(new PollOption(1L, "Option1", 1),
@@ -31,44 +35,104 @@ class PollServiceTest {
                 new Poll(2L, "Poll2", "Poll2 Description",
                         List.of(new PollOption(3L, "Option3", 3),
                                 new PollOption(4L, "Option4", 4)))
-        );
-
-        mockRepoFindAll();
-        mockRepoFindById();
-        mockRepoSave();
+        ));
 
         this.subject = new PollService(pollRepository);
+
+        mockRepoFindAll();
+        mockRepoGetById();
+        mockRepoSave();
+        mockRepoDelete();
+        mockRepoDeleteById();
     }
 
     @Test
     void getPollList() {
+        List<Poll> pollList = subject.getPollList();
+        verify(pollRepository, times(1)).findAll();
+        assertEquals(2, pollList.size());
     }
 
     @Test
     void getPollById() {
+        Poll pollById = subject.getPollById(1L);
+        assertEquals("Poll1", pollById.getTitle());
+        assertEquals("Poll1 Description", pollById.getDescription());
+
+        assertEquals(2, pollById.getOptionList().size());
+        assertEquals("Option1", pollById.getOptionList().get(0).getTitle());
+        assertEquals(1, pollById.getOptionList().get(0).getVoteCount());
+
+        assertEquals("Option2", pollById.getOptionList().get(1).getTitle());
+        assertEquals(2, pollById.getOptionList().get(1).getVoteCount());
     }
 
     @Test
     void savePoll() {
+        Poll pollToSave = new Poll(5L, "Test", "TestDescription",
+                List.of(new PollOption(5L, "ChooseTest", 1),
+                        new PollOption(6L, "Option2", 2)));
+
+        Poll savedPoll = subject.savePoll(pollToSave);
+        assertEquals(pollToSave, savedPoll);
+
+        Poll pollById = subject.getPollById(5L);
+        assertEquals(pollToSave, pollById);
+    }
+
+    @Test
+    void deletePoll() {
+        Poll pollToSave = new Poll(5L, "Test", "TestDescription",
+                List.of(new PollOption(5L, "ChooseTest", 1),
+                        new PollOption(6L, "Option2", 2)));
+        subject.savePoll(pollToSave);
+
+        Poll pollById = subject.getPollById(5L);
+        assertEquals(pollToSave, pollById);
+        assertEquals(3L, subject.getPollList().size());
+
+        subject.deletePoll(pollById);
+        assertEquals(2L, subject.getPollList().size());
+
+        Poll pollById1 = subject.getPollById(5L);
+        assertNull(pollById1);
+
+        subject.deleteById(1L);
+        assertEquals(1L, subject.getPollList().size());
     }
 
     private void mockRepoFindAll() {
-        List<Poll> pollList = new ArrayList<>(pollMap.values());
-        Mockito.when(pollRepository.findAll()).thenReturn(pollList);
+        when(pollRepository.findAll()).thenAnswer(invocationOnMock -> new ArrayList<>(pollMap.values()));
     }
 
-    private void mockRepoFindById() {
-        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
-        Mockito.verify(pollRepository).getById(idCaptor.capture());
-
-        Poll poll = pollMap.get(idCaptor.getValue());
-
-        Mockito.when(pollRepository.getById(idCaptor.getValue())).thenReturn(poll);
+    private void mockRepoGetById() {
+        when(pollRepository.getById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
+            Long argument = (Long) invocationOnMock.getArguments()[0];
+            return pollMap.get(argument);
+        });
     }
 
     private void mockRepoSave() {
-        ArgumentCaptor<Poll> pollCaptor = ArgumentCaptor.forClass(Poll.class);
-        Mockito.verify(pollRepository).save(pollCaptor.capture());
-        pollMap.put(pollCaptor.getValue().getId(), pollCaptor.getValue());
+        when(pollRepository.save(Mockito.any(Poll.class))).thenAnswer(invocationOnMock -> {
+            Poll argument = (Poll) invocationOnMock.getArguments()[0];
+            pollMap.put(argument.getId(), argument);
+            return argument;
+        });
+    }
+
+    private void mockRepoDelete() {
+        doAnswer(invocationOnMock -> {
+            Poll poll = (Poll) invocationOnMock.getArguments()[0];
+            pollMap.remove(poll.getId());
+            return null;
+        }).when(pollRepository).delete(Mockito.any(Poll.class));
+    }
+
+    private void mockRepoDeleteById() {
+        doAnswer(invocationOnMock -> {
+            Long id = (Long) invocationOnMock.getArguments()[0];
+            pollMap.remove(id);
+            return null;
+        }).when(pollRepository).deleteById(Mockito.anyLong());
     }
 }

@@ -31,4 +31,8 @@ public class PollService {
         this.pollRepository.delete(poll);
     }
 
+    public void deleteById(Long id) {
+        this.pollRepository.deleteById(id);
+    }
+
 }

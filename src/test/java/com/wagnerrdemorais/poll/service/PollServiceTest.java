@@ -46,14 +46,14 @@ class PollServiceTest {
     }
 
     @Test
-    void getPollList() {
+    void givenTwoPolls_whenGetPollList_shouldReturnTwoPolls() {
         List<Poll> pollList = subject.getPollList();
         verify(pollRepository, times(1)).findAll();
         assertEquals(2, pollList.size());
     }
 
     @Test
-    void getPollById() {
+    void givenPollList_whenGetPollById_shouldReturnCorrespondingPoll() {
         Poll pollById = subject.getPollById(1L);
         assertEquals("Poll1", pollById.getTitle());
         assertEquals("Poll1 Description", pollById.getDescription());
@@ -67,7 +67,7 @@ class PollServiceTest {
     }
 
     @Test
-    void savePoll() {
+    void givenPollList_whenSavePoll_shouldReturnSavedPoll() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", 1),
                         new PollOption(6L, "Option2", 2)));
@@ -80,7 +80,7 @@ class PollServiceTest {
     }
 
     @Test
-    void deletePoll() {
+    void givenPollList_andNewPoll_whenDeletePollById_shouldDeleteAccordingly() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", 1),
                         new PollOption(6L, "Option2", 2)));
@@ -101,7 +101,7 @@ class PollServiceTest {
     }
 
     @Test
-    void existsById() {
+    void givenTwoPolls_whenRunPollExistsById_shouldReturnTrueForExisting_andFalseIfPollDoesNotExists() {
         assertTrue(subject.pollExistsById(1L));
         assertFalse(subject.pollExistsById(3L));
     }

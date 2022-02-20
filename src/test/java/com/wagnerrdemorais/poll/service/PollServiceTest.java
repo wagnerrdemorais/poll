@@ -2,6 +2,7 @@ package com.wagnerrdemorais.poll.service;
 
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
+import com.wagnerrdemorais.poll.repository.OptionRepository;
 import com.wagnerrdemorais.poll.repository.PollRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,24 +20,26 @@ class PollServiceTest {
 
     PollService subject;
     PollRepository pollRepository;
+    OptionRepository optionRepository;
     Map<Long, Poll> pollMap = new LinkedHashMap<>();
 
     @BeforeEach
     void setUp() {
         pollRepository = Mockito.mock(PollRepository.class);
+        optionRepository = Mockito.mock(OptionRepository.class);
 
         pollMap.putAll(Map.of(
                 1L,
                 new Poll(1L, "Poll1", "Poll1 Description",
-                        List.of(new PollOption(1L, "Option1", 1),
-                                new PollOption(2L, "Option2", 2))),
+                        List.of(new PollOption(1L, "Option1", new ArrayList<>()),
+                                new PollOption(2L, "Option2", new ArrayList<>()))),
                 2L,
                 new Poll(2L, "Poll2", "Poll2 Description",
-                        List.of(new PollOption(3L, "Option3", 3),
-                                new PollOption(4L, "Option4", 4)))
+                        List.of(new PollOption(3L, "Option3", new ArrayList<>()),
+                                new PollOption(4L, "Option4", new ArrayList<>())))
         ));
 
-        this.subject = new PollService(pollRepository);
+        this.subject = new PollService(pollRepository, optionRepository);
 
         mockRepoFindAll();
         mockRepoGetById();
@@ -60,17 +63,15 @@ class PollServiceTest {
 
         assertEquals(2, pollById.getOptionList().size());
         assertEquals("Option1", pollById.getOptionList().get(0).getTitle());
-        assertEquals(1, pollById.getOptionList().get(0).getVoteCount());
 
         assertEquals("Option2", pollById.getOptionList().get(1).getTitle());
-        assertEquals(2, pollById.getOptionList().get(1).getVoteCount());
     }
 
     @Test
     void givenPollList_whenSavePoll_shouldReturnSavedPoll() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
-                List.of(new PollOption(5L, "ChooseTest", 1),
-                        new PollOption(6L, "Option2", 2)));
+                List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
+                        new PollOption(6L, "Option2", new ArrayList<>())));
 
         Poll savedPoll = subject.savePoll(pollToSave);
         assertEquals(pollToSave, savedPoll);
@@ -82,8 +83,8 @@ class PollServiceTest {
     @Test
     void givenPollList_andNewPoll_whenDeletePollById_shouldDeleteAccordingly() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
-                List.of(new PollOption(5L, "ChooseTest", 1),
-                        new PollOption(6L, "Option2", 2)));
+                List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
+                        new PollOption(6L, "Option2", new ArrayList<>())));
         subject.savePoll(pollToSave);
 
         Poll pollById = subject.getPollById(5L);

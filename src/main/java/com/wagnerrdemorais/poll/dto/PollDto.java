@@ -1,7 +1,7 @@
 package com.wagnerrdemorais.poll.dto;
 
 import com.wagnerrdemorais.poll.model.Poll;
-import com.wagnerrdemorais.poll.model.PollOption;
+import com.wagnerrdemorais.poll.model.Vote;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,27 +63,23 @@ public class PollDto {
     }
 
     /**
-     * Converts this PollDto to Poll Entity
-     * @return Poll
-     */
-    public Poll toEntity() {
-        List<PollOption> pollOptionList = this.optionList.stream()
-                .map(opt -> new PollOption(opt.getId(), opt.getTitle(), opt.getVoteCount()))
-                .collect(Collectors.toList());
-
-        return new Poll(this.id, this.title, this.description, pollOptionList);
-    }
-
-    /**
      * Receives a Poll and converts it to PollDto
      * @param poll Poll
      * @return PollDto
      */
     public static PollDto fromEntity(Poll poll) {
+
         List<PollOptionDto> pollOptionDtos = poll.getOptionList().stream()
-                .map(opt -> new PollOptionDto(opt.getId(), opt.getTitle(), opt.getVoteCount()))
+                .map(opt -> new PollOptionDto(opt.getId(), opt.getTitle(), convertVoteToDto(opt.getVoteList())))
                 .collect(Collectors.toList());
 
         return new PollDto(poll.getId(), poll.getTitle(), poll.getDescription(), pollOptionDtos);
     }
+
+    private static List<VoteDto> convertVoteToDto(List<Vote> voteList) {
+        return voteList.stream()
+                .map(vote -> new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId()))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -21,7 +21,7 @@ public class Poll {
     /**
      * A Poll can have multiple PollOption values, but the PollOption must have only one Poll
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "poll")
     private List<PollOption> optionList = new ArrayList<>();
 
     /**

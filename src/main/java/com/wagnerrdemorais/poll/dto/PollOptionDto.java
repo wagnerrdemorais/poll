@@ -1,5 +1,7 @@
 package com.wagnerrdemorais.poll.dto;
 
+import java.util.List;
+
 /**
  * PollOptionDto used to return PollOption information to view.
  */
@@ -9,18 +11,18 @@ public class PollOptionDto {
 
     private String title;
 
-    private int voteCount;
+    private List<VoteDto> voteList;
 
     /**
      * All Args Constructor
      * @param id Long
      * @param title String
-     * @param voteCount int
+     * @param voteList List<VoteDto>
      */
-    public PollOptionDto(Long id, String title, int voteCount) {
+    public PollOptionDto(Long id, String title, List<VoteDto> voteList) {
         this.id = id;
         this.title = title;
-        this.voteCount = voteCount;
+        this.voteList = voteList;
     }
 
     public Long getId() {
@@ -39,11 +41,11 @@ public class PollOptionDto {
         this.title = title;
     }
 
-    public int getVoteCount() {
-        return voteCount;
+    public List<VoteDto> getVoteList() {
+        return voteList;
     }
 
-    public void setVoteCount(int voteCount) {
-        this.voteCount = voteCount;
+    public void setVoteList(List<VoteDto> voteList) {
+        this.voteList = voteList;
     }
 }

@@ -1,9 +1,8 @@
 package com.wagnerrdemorais.poll.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PollOption database entity
@@ -17,7 +16,12 @@ public class PollOption {
 
     private String title;
 
-    private int voteCount;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "poll_id")
+    private Poll poll;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pollOption")
+    private List<Vote> voteList;
 
     /**
      * No args Constructor
@@ -25,16 +29,21 @@ public class PollOption {
     public PollOption() {
     }
 
+    public PollOption(String title) {
+        this.title = title;
+        this.voteList = new ArrayList<>();
+    }
+
     /**
      * All args Constructor
      * @param id Long
      * @param title String
-     * @param voteCount int
+     * @param voteList List<Vote>
      */
-    public PollOption(Long id, String title, int voteCount) {
+    public PollOption(Long id, String title, List<Vote> voteList) {
         this.id = id;
         this.title = title;
-        this.voteCount = voteCount;
+        this.voteList = voteList;
     }
 
     public Long getId() {
@@ -49,11 +58,23 @@ public class PollOption {
         this.title = title;
     }
 
-    public int getVoteCount() {
-        return voteCount;
+    public Poll getPoll() {
+        return poll;
     }
 
-    public void setVoteCount(int voteCount) {
-        this.voteCount = voteCount;
+    public void setPoll(Poll poll) {
+        this.poll = poll;
+    }
+
+    public List<Vote> getVoteList() {
+        return voteList;
+    }
+
+    public void setVoteList(List<Vote> voteList) {
+        this.voteList = voteList;
+    }
+
+    public void addVote(Vote vote) {
+        this.voteList.add(vote);
     }
 }

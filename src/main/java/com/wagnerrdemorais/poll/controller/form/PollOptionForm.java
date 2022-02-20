@@ -9,8 +9,6 @@ public class PollOptionForm {
 
     private String title;
 
-    private int voteCount;
-
     public Long getId() {
         return id;
     }
@@ -27,11 +25,4 @@ public class PollOptionForm {
         this.title = title;
     }
 
-    public int getVoteCount() {
-        return voteCount;
-    }
-
-    public void setVoteCount(int voteCount) {
-        this.voteCount = voteCount;
-    }
 }

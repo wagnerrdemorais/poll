@@ -31,25 +31,25 @@ class PollControllerTest {
     @Test
     @DirtiesContext
     void givenEmptyDatabase_whenAddNewPoll_thenAddedPollShouldBeAvailable() throws Exception {
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
 
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
     }
 
     @Test
     @DirtiesContext
     void givenEmptyDatabase_whenAddAndUpdatingAPoll_thenPollShouldBeUpdated() throws Exception {
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
 
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
 
         PollForm updatedForm = asPollFormJson(response);
         updatedForm.setDescription("UpdatedDescription");
@@ -60,19 +60,19 @@ class PollControllerTest {
                 .andReturn()
                 .getResponse().getContentAsString();
 
-        runGet(updated);
+        runGetListWithOkResponseAndContent(updated);
     }
 
     @Test
     @DirtiesContext
     void givenEmptyDatabase_whenUpdatePollWithNullId_thenShouldReturnBadRequest() throws Exception {
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
 
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
 
         PollForm updatedForm = asPollFormJson(response);
         updatedForm.setId(null);
@@ -84,42 +84,75 @@ class PollControllerTest {
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenDeletingItById_thenPollShouldBeDeleted() throws Exception {
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
 
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
 
         runDelete("1")
                 .andExpect(status().isOk());
 
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
     }
 
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenDeletingItById_WithWrongId_shouldRespondWithBadRequest() throws Exception {
-        runGet("[]");
+        runGetListWithOkResponseAndContent("[]");
 
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
 
         runDelete("2")
                 .andExpect(status().isBadRequest());
 
-        runGet(response);
+        runGetListWithOkResponseAndContent(response);
     }
 
-    private void runGet(String s) throws Exception {
+    @Test
+    @DirtiesContext
+    void givenOneAddedPoll_whenGetPollById_thenShouldReturnCorrespondingPoll() throws Exception {
+        runGetListWithOkResponseAndContent("[]");
+
+        String added = runAdd(asJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        runGetById("1")
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(added)));
+    }
+
+    @Test
+    @DirtiesContext
+    void givenOneAddedPoll_whenGetPollById_withNonExistingId_thenShouldRespondWithBadRequest() throws Exception {
+        runGetListWithOkResponseAndContent("[]");
+
+        runAdd(asJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        runGetById("0")
+                .andExpect(status().isBadRequest());
+    }
+
+    private ResultActions runGetById(String id) throws Exception {
+        return this.mockMvc.perform(get("/poll/get")
+                        .param("id", id))
+                .andDo(print());
+    }
+
+    private void runGetListWithOkResponseAndContent(String content) throws Exception {
         this.mockMvc.perform(get("/poll/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(s)));
+                .andExpect(content().string(containsString(content)));
     }
 
     private ResultActions runAdd(String content) throws Exception {

@@ -2,6 +2,7 @@ package com.wagnerrdemorais.poll.controller;
 
 import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.dto.PollDto;
+import com.wagnerrdemorais.poll.dto.VotePageDto;
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.service.PollService;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -50,10 +51,12 @@ public class PollController {
      * @return ResponseEntity<PollDto>
      */
     @PostMapping("/add")
-    public ResponseEntity<PollDto> addPoll(@RequestBody PollForm pollForm) {
+    public ResponseEntity<List<VotePageDto.PollOptionLink>> addPoll(@RequestBody PollForm pollForm) {
         Poll savedPoll = pollService.savePoll(pollForm);
-        PollDto pollDto = PollDto.fromEntity(savedPoll);
-        return ResponseEntity.ok(pollDto);
+
+        List<VotePageDto.PollOptionLink> pollOptionLinks = generateVoteLink(savedPoll);
+
+        return ResponseEntity.ok(pollOptionLinks);
     }
 
     /**
@@ -113,6 +116,18 @@ public class PollController {
         }
         String href = WebMvcLinkBuilder.linkTo(PollController.class).slash("get?id=" + id).withSelfRel().getHref();
         return ResponseEntity.ok(href);
+    }
+
+    private List<VotePageDto.PollOptionLink> generateVoteLink(Poll savedPoll) {
+        return savedPoll.getOptionList().stream()
+                .map(opt -> {
+                    String href = WebMvcLinkBuilder
+                            .linkTo(VoteController.class)
+                            .slash("new?optId=" + opt.getId()+"&opinion=")
+                            .withSelfRel().getHref();
+                    return new VotePageDto.PollOptionLink(opt.getTitle(), href);
+
+                }).collect(Collectors.toList());
     }
 
 }

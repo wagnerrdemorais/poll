@@ -5,13 +5,7 @@ import com.wagnerrdemorais.poll.dto.VoteDto;
 import com.wagnerrdemorais.poll.model.Vote;
 import com.wagnerrdemorais.poll.service.VoteService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vote")
@@ -30,10 +24,11 @@ public class VoteController {
         return ResponseEntity.ok(voteDto);
     }
 
-    private List<VoteDto> voteToDtoList(List<Vote> votes) {
-        return votes.stream().map(vote -> new VoteDto(vote.getId(),
-                        vote.getOpinion(),
-                        vote.getPollOption().getId()))
-                .collect(Collectors.toList());
+    @GetMapping("/new")
+    public ResponseEntity<VoteDto> vote(String optId, String opinion) {
+        VoteForm voteForm = new VoteForm(Long.valueOf(optId), opinion);
+        Vote vote = voteService.saveVote(voteForm);
+        VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());
+        return ResponseEntity.ok(voteDto);
     }
 }

@@ -6,6 +6,14 @@ public class VoteForm {
     Long optionId;
     String opinion;
 
+    public VoteForm() {
+    }
+
+    public VoteForm(Long optionId, String opinion) {
+        this.optionId = optionId;
+        this.opinion = opinion;
+    }
+
     public Long getVoteId() {
         return voteId;
     }

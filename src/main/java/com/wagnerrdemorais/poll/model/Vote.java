@@ -2,6 +2,9 @@ package com.wagnerrdemorais.poll.model;
 
 import javax.persistence.*;
 
+/**
+ * Vote database entity
+ */
 @Entity
 public class Vote {
 
@@ -14,9 +17,17 @@ public class Vote {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PollOption pollOption;
 
+    /**
+     * No args constructor
+     */
     public Vote() {
     }
 
+    /**
+     * All args constructor
+     * @param pollOption PollOption
+     * @param opinion String
+     */
     public Vote(PollOption pollOption, String opinion) {
         this.pollOption = pollOption;
         this.opinion = opinion;

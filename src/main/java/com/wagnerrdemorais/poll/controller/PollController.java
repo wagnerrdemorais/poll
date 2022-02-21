@@ -48,14 +48,13 @@ public class PollController {
      * the saved object Dto.
      *
      * @param pollForm PollForm
-     * @return ResponseEntity<PollDto>
+     * @return ResponseEntity<List<VotePageDto.PollOptionLink>>
      */
     @PostMapping("/add")
     public ResponseEntity<List<VotePageDto.PollOptionLink>> addPoll(@RequestBody PollForm pollForm) {
         Poll savedPoll = pollService.savePoll(pollForm);
 
         List<VotePageDto.PollOptionLink> pollOptionLinks = generateVoteLink(savedPoll);
-
         return ResponseEntity.ok(pollOptionLinks);
     }
 
@@ -109,15 +108,11 @@ public class PollController {
         return ResponseEntity.ok(pollDto);
     }
 
-    @GetMapping("/getUrl")
-    public ResponseEntity<String> getPollUrl(Long id) {
-        if (id == null || !pollService.pollExistsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        String href = WebMvcLinkBuilder.linkTo(PollController.class).slash("get?id=" + id).withSelfRel().getHref();
-        return ResponseEntity.ok(href);
-    }
-
+    /**
+     * Given a Poll, generates a List of links for voting
+     * @param savedPoll Poll
+     * @return List<VotePageDto.PollOptionLink>
+     */
     private List<VotePageDto.PollOptionLink> generateVoteLink(Poll savedPoll) {
         return savedPoll.getOptionList().stream()
                 .map(opt -> {

@@ -1,13 +1,13 @@
 package com.wagnerrdemorais.poll.controller.form;
 
+/**
+ * Form with information received by the controller to register a new vote.
+ */
 public class VoteForm {
 
     Long voteId;
     Long optionId;
     String opinion;
-
-    public VoteForm() {
-    }
 
     public VoteForm(Long optionId, String opinion) {
         this.optionId = optionId;

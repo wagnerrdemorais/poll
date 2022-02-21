@@ -2,20 +2,14 @@ package com.wagnerrdemorais.poll.dto;
 
 import java.util.List;
 
+/**
+ * Dto with poll and options descriptions, with links for voting
+ */
 public class VotePageDto {
 
     String pollTitle;
     String pollDescription;
     List<PollOptionLink> optionLinks;
-
-    public VotePageDto() {
-    }
-
-    public VotePageDto(String pollTitle, String pollDescription, List<PollOptionLink> optionLinks) {
-        this.pollTitle = pollTitle;
-        this.pollDescription = pollDescription;
-        this.optionLinks = optionLinks;
-    }
 
     public String getPollTitle() {
         return pollTitle;
@@ -41,14 +35,19 @@ public class VotePageDto {
         this.optionLinks = optionLinks;
     }
 
+    /**
+     * Hold optionTitle and links for voting
+     */
     public static class PollOptionLink {
 
         String optionTitle;
         String optionLink;
 
-        public PollOptionLink() {
-        }
-
+        /**
+         * All args Constructor
+         * @param optionTitle
+         * @param optionLink
+         */
         public PollOptionLink(String optionTitle, String optionLink) {
             this.optionTitle = optionTitle;
             this.optionLink = optionLink;

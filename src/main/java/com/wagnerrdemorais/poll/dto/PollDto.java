@@ -76,6 +76,11 @@ public class PollDto {
         return new PollDto(poll.getId(), poll.getTitle(), poll.getDescription(), pollOptionDtos);
     }
 
+    /**
+     * Given a list of votes generates a list of voteDto
+     * @param voteList List<Vote>
+     * @return List<VoteDto>
+     */
     private static List<VoteDto> convertVoteToDto(List<Vote> voteList) {
         return voteList.stream()
                 .map(vote -> new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId()))

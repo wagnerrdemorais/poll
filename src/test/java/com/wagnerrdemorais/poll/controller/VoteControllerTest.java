@@ -3,6 +3,7 @@ package com.wagnerrdemorais.poll.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
+import com.wagnerrdemorais.poll.controller.form.VoteForm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +33,50 @@ class VoteControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String saved = runSave("1", "test").andExpect(status().isOk())
+        VoteForm voteForm = new VoteForm(1L, "test");
+        String saved = runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
         Assertions.assertEquals("{\"id\":1,\"opinion\":\"test\",\"pollOptionId\":1}", saved);
     }
 
-    private ResultActions runSave(String optionId, String opinion) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.get("/vote/new")
-                .param("optId", optionId)
-                .param("opinion", opinion));
+    @Test
+    @DirtiesContext
+    void givenAddedPollWithTwoVotes_whenGetVotes_thenShouldReturnPollWithTwoVotes() throws Exception {
+        runAdd(asJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        VoteForm voteForm = new VoteForm(1L, null);
+
+        runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        voteForm = new VoteForm(1L, "test");
+
+        runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String contentAsString = runGetVotes("1")
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String expected = "{\"pollTitle\":\"TestTitle\",\"pollDescription\":\"TestDescription\",\"optionVotes\":[{\"optionTitle\":\"TestOption\",\"voteCount\":2,\"opinions\":[\"test\"]}]}";
+        Assertions.assertEquals(expected, contentAsString);
+    }
+
+    @Test
+    @DirtiesContext
+    void givenEmptyPolls_whenGetVotesWithNonExistingId_thenShouldRespondWithBadRequest() throws Exception {
+        runGetVotes("1")
+                .andExpect(status().isBadRequest());
+    }
+
+    private ResultActions runNewVote(String content) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post("/vote/new")
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions runAdd(String content) throws Exception {
@@ -49,6 +84,11 @@ class VoteControllerTest {
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions runGetVotes(String pollId) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get("/vote/getVotes")
+                .param("pollId", pollId));
     }
 
     public static String asJsonString(final Object obj) {

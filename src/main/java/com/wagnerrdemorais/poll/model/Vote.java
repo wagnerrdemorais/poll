@@ -14,7 +14,7 @@ public class Vote {
 
     private String opinion;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     private PollOption pollOption;
 
     /**

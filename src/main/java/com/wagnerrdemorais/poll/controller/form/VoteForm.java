@@ -9,6 +9,9 @@ public class VoteForm {
     Long optionId;
     String opinion;
 
+    public VoteForm() {
+    }
+
     public VoteForm(Long optionId, String opinion) {
         this.optionId = optionId;
         this.opinion = opinion;
@@ -24,12 +27,23 @@ public class VoteForm {
         return voteId;
     }
 
+    public void setVoteId(Long voteId) {
+        this.voteId = voteId;
+    }
+
     public Long getOptionId() {
         return optionId;
+    }
+
+    public void setOptionId(Long optionId) {
+        this.optionId = optionId;
     }
 
     public String getOpinion() {
         return opinion;
     }
 
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
+    }
 }

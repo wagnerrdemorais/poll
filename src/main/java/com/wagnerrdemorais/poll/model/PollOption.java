@@ -1,7 +1,6 @@
 package com.wagnerrdemorais.poll.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,22 +15,16 @@ public class PollOption {
 
     private String title;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "poll_id")
+    @ManyToOne(cascade = CascadeType.ALL)
     private Poll poll;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pollOption")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pollOption")
     private List<Vote> voteList;
 
     /**
      * No args Constructor
      */
     public PollOption() {
-    }
-
-    public PollOption(String title) {
-        this.title = title;
-        this.voteList = new ArrayList<>();
     }
 
     /**
@@ -71,11 +64,4 @@ public class PollOption {
         return voteList;
     }
 
-    public void setVoteList(List<Vote> voteList) {
-        this.voteList = voteList;
-    }
-
-    public void addVote(Vote vote) {
-        this.voteList.add(vote);
-    }
 }

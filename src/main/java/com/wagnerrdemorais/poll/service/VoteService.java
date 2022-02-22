@@ -45,9 +45,7 @@ public class VoteService {
      */
     public Vote saveVote(VoteForm voteForm) {
         Vote vote = voteFormToVote(voteForm);
-        Vote savedVote = saveVote(vote);
-        optionRepository.save(vote.getPollOption());
-        return savedVote;
+        return saveVote(vote);
     }
 
     /**
@@ -59,6 +57,7 @@ public class VoteService {
     private Vote voteFormToVote(VoteForm voteForm) {
         Vote vote;
         PollOption pollOption = optionRepository.getById(voteForm.getOptionId());
+
         if (voteForm.getVoteId() == null) {
             vote = new Vote(voteForm.getVoteId(), pollOption, voteForm.getOpinion());
         } else {

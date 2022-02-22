@@ -40,7 +40,7 @@ class PollControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String testOptionLink = "[{\"optionTitle\":\"TestOption\",\"optionLink\":\"http://localhost/vote/new?optId=1&opinion=\"}]";
+        String testOptionLink = "[{\"optionTitle\":\"TestOption\",\"optionLink\":\"http://localhost/votes/vote?optId=1&opinion=\"}]";
         assertEquals(testOptionLink, response);
     }
 
@@ -130,27 +130,27 @@ class PollControllerTest {
     }
 
     private ResultActions runGetById(String id) throws Exception {
-        return this.mockMvc.perform(get("/poll/get")
+        return this.mockMvc.perform(get("/polls/get")
                         .param("id", id))
                 .andDo(print());
     }
 
     private void runGetListWithOkResponseAndContent(String content) throws Exception {
-        this.mockMvc.perform(get("/poll/list"))
+        this.mockMvc.perform(get("/polls/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(content)));
     }
 
     private ResultActions runAdd(String content) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post("/poll/add")
+        return mockMvc.perform(MockMvcRequestBuilders.post("/polls/add")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions runUpdate(PollForm updatedForm) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.put("/poll/update")
+        return mockMvc.perform(MockMvcRequestBuilders.put("/polls/update")
                 .content(asJsonString(updatedForm))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -158,7 +158,7 @@ class PollControllerTest {
     }
 
     private ResultActions runDelete(String id) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.delete("/poll/delete")
+        return mockMvc.perform(MockMvcRequestBuilders.delete("/polls/delete")
                 .param("id", id));
     }
 

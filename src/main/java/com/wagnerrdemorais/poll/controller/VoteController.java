@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Rest Controller for voting endpoints
  */
 @RestController
-@RequestMapping("/vote")
+@RequestMapping("/votes")
 public class VoteController {
 
     private final VoteService voteService;
@@ -43,7 +43,7 @@ public class VoteController {
      * @param voteForm VoteForm
      * @return ResponseEntity<VoteDto>
      */
-    @PostMapping("/new")
+    @PostMapping("/vote")
     public ResponseEntity<VoteDto> vote(@RequestBody VoteForm voteForm) {
         Vote vote = voteService.saveVote(voteForm);
         VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());

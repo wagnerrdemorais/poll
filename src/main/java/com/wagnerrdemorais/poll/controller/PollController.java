@@ -2,8 +2,6 @@ package com.wagnerrdemorais.poll.controller;
 
 import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.dto.PollDto;
-import com.wagnerrdemorais.poll.dto.PollVotesDto;
-import com.wagnerrdemorais.poll.dto.VoteDto;
 import com.wagnerrdemorais.poll.dto.VotePageDto;
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.service.PollService;
@@ -11,14 +9,14 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Rest Controller containing endpoints to enable adding, editing and removing Polls
  */
 @RestController
-@RequestMapping("/poll")
+@RequestMapping("/polls")
 public class PollController {
 
     private final PollService pollService;
@@ -121,7 +119,7 @@ public class PollController {
                 .map(opt -> {
                     String href = WebMvcLinkBuilder
                             .linkTo(VoteController.class)
-                            .slash("new?optId=" + opt.getId() + "&opinion=")
+                            .slash("vote?optId=" + opt.getId() + "&opinion=")
                             .withSelfRel().getHref();
                     return new VotePageDto.PollOptionLink(opt.getTitle(), href);
                 }).collect(Collectors.toList());

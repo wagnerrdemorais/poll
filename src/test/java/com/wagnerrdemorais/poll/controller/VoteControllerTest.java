@@ -73,21 +73,21 @@ class VoteControllerTest {
     }
 
     private ResultActions runNewVote(String content) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post("/vote/new")
+        return mockMvc.perform(MockMvcRequestBuilders.post("/votes/vote")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions runAdd(String content) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post("/poll/add")
+        return mockMvc.perform(MockMvcRequestBuilders.post("/polls/add")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions runGetVotes(String pollId) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.get("/vote/getVotes")
+        return mockMvc.perform(MockMvcRequestBuilders.get("/votes/getVotes")
                 .param("pollId", pollId));
     }
 

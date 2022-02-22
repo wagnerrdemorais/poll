@@ -1,8 +1,11 @@
 package com.wagnerrdemorais.poll.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
+import com.wagnerrdemorais.poll.dto.PollDto;
+import com.wagnerrdemorais.poll.dto.PollOptionDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,9 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,53 +35,36 @@ class PollControllerTest {
 
     @Test
     @DirtiesContext
-    void givenEmptyDatabase_whenAddNewPoll_thenAddedPollShouldBeAvailable() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
+    void givenEmptyDatabase_whenAddNewPoll_thenShouldGenerateLinkForVoting() throws Exception {
         String response = runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGetListWithOkResponseAndContent(response);
+        String testOptionLink = "[{\"optionTitle\":\"TestOption\",\"optionLink\":\"http://localhost/vote/new?optId=1&opinion=\"}]";
+        assertEquals(testOptionLink, response);
     }
 
     @Test
     @DirtiesContext
     void givenEmptyDatabase_whenAddAndUpdatingAPoll_thenPollShouldBeUpdated() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
-        String response = runAdd(asJsonString(createTestPollForm()))
+        runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGetListWithOkResponseAndContent(response);
+        String dtoToUpdate = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        PollForm toUpdate = createAndUpdateFormFromDto(dtoToUpdate,"test1","test2", "test3");
 
-        PollForm updatedForm = asPollFormJson(response);
-        updatedForm.setDescription("UpdatedDescription");
-        updatedForm.setTitle("UpdatedTitle");
+        String updated = runUpdate(toUpdate).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String updated1 = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        String updated = runUpdate(updatedForm)
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse().getContentAsString();
-
-        runGetListWithOkResponseAndContent(updated);
+        assertEquals(updated, updated1);
     }
 
     @Test
     @DirtiesContext
     void givenEmptyDatabase_whenUpdatePollWithNullId_thenShouldReturnBadRequest() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
-        String response = runAdd(asJsonString(createTestPollForm()))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        runGetListWithOkResponseAndContent(response);
-
-        PollForm updatedForm = asPollFormJson(response);
+        PollForm updatedForm = new PollForm();
         updatedForm.setId(null);
-
         runUpdate(updatedForm)
                 .andExpect(status().isBadRequest());
     }
@@ -84,56 +72,44 @@ class PollControllerTest {
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenDeletingItById_thenPollShouldBeDeleted() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
-        String response = runAdd(asJsonString(createTestPollForm()))
+        runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGetListWithOkResponseAndContent(response);
-
-        runDelete("1")
-                .andExpect(status().isOk());
-
+        runDelete("1").andExpect(status().isOk());
         runGetListWithOkResponseAndContent("[]");
     }
 
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenDeletingItById_WithWrongId_shouldRespondWithBadRequest() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
-        String response = runAdd(asJsonString(createTestPollForm()))
+        runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGetListWithOkResponseAndContent(response);
-
         runDelete("2")
                 .andExpect(status().isBadRequest());
-
-        runGetListWithOkResponseAndContent(response);
     }
 
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenGetPollById_thenShouldReturnCorrespondingPoll() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
-        String added = runAdd(asJsonString(createTestPollForm()))
+        PollForm testPollForm = createTestPollForm();
+        runAdd(asJsonString(testPollForm))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        runGetById("1")
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(added)));
+        String dtoResponse = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        PollDto pollDto = new ObjectMapper().readValue(dtoResponse, PollDto.class);
+
+        assertEquals(1L, pollDto.getId());
+        assertEquals(testPollForm.getDescription(), pollDto.getDescription());
+        assertEquals(testPollForm.getTitle(), pollDto.getTitle());
     }
 
     @Test
     @DirtiesContext
     void givenOneAddedPoll_whenGetPollById_withNonExistingId_thenShouldRespondWithBadRequest() throws Exception {
-        runGetListWithOkResponseAndContent("[]");
-
         runAdd(asJsonString(createTestPollForm()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -195,13 +171,20 @@ class PollControllerTest {
         }
     }
 
-    public static PollForm asPollFormJson(final String value) {
-        try {
-            final ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(value, PollForm.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private PollForm createAndUpdateFormFromDto(String dto, String title, String description, String optionDesc) throws JsonProcessingException {
+        PollDto pollDto = new ObjectMapper().readValue(dto, PollDto.class);
+        PollForm update = new PollForm();
+        update.setId(pollDto.getId());
+        update.setTitle(title);
+        update.setDescription(description);
+        update.setOptionList(new ArrayList<>());
+        for (PollOptionDto pollOptionDto : pollDto.getOptionList()) {
+            PollOptionForm pollOptionForm = new PollOptionForm();
+            pollOptionForm.setId(pollOptionDto.getId());
+            pollOptionForm.setTitle(optionDesc);
+            update.getOptionList().add(pollOptionForm);
         }
+        return update;
     }
 
 }

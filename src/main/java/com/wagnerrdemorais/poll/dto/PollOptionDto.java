@@ -25,6 +25,12 @@ public class PollOptionDto {
         this.voteList = voteList;
     }
 
+    /**
+     * No args constructor
+     */
+    public PollOptionDto() {
+    }
+
     public Long getId() {
         return id;
     }

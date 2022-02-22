@@ -30,6 +30,12 @@ public class PollDto {
         this.optionList = optionList;
     }
 
+    /**
+     * No args constructor
+     */
+    public PollDto() {
+    }
+
     public Long getId() {
         return id;
     }

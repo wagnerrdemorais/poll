@@ -2,31 +2,22 @@ package com.wagnerrdemorais.poll.service;
 
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
-import com.wagnerrdemorais.poll.repository.OptionRepository;
-import com.wagnerrdemorais.poll.repository.PollRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class PollServiceTest {
+class PollServiceTest extends PollRepoTestHelper {
 
     PollService subject;
-    PollRepository pollRepository;
-    OptionRepository optionRepository;
-    Map<Long, Poll> pollMap = new LinkedHashMap<>();
 
     @BeforeEach
     void setUp() {
-        pollRepository = Mockito.mock(PollRepository.class);
-        optionRepository = Mockito.mock(OptionRepository.class);
 
         pollMap.putAll(Map.of(
                 1L,
@@ -40,12 +31,6 @@ class PollServiceTest {
         ));
 
         this.subject = new PollService(pollRepository, optionRepository);
-
-        mockRepoFindAll();
-        mockRepoGetById();
-        mockRepoSave();
-        mockRepoDeleteById();
-        mockRepoExistsById();
     }
 
     @Test
@@ -107,37 +92,4 @@ class PollServiceTest {
         assertFalse(subject.pollExistsById(3L));
     }
 
-    private void mockRepoFindAll() {
-        when(pollRepository.findAll()).thenAnswer(invocationOnMock -> new ArrayList<>(pollMap.values()));
-    }
-
-    private void mockRepoGetById() {
-        when(pollRepository.getById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
-            Long argument = (Long) invocationOnMock.getArguments()[0];
-            return pollMap.get(argument);
-        });
-    }
-
-    private void mockRepoSave() {
-        when(pollRepository.save(Mockito.any(Poll.class))).thenAnswer(invocationOnMock -> {
-            Poll argument = (Poll) invocationOnMock.getArguments()[0];
-            pollMap.put(argument.getId(), argument);
-            return argument;
-        });
-    }
-
-    private void mockRepoDeleteById() {
-        doAnswer(invocationOnMock -> {
-            Long id = (Long) invocationOnMock.getArguments()[0];
-            pollMap.remove(id);
-            return null;
-        }).when(pollRepository).deleteById(Mockito.anyLong());
-    }
-
-    private void mockRepoExistsById() {
-        when(pollRepository.existsById(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
-            Long argument = (Long) invocationOnMock.getArguments()[0];
-            return pollMap.containsKey(argument);
-        });
-    }
 }

@@ -56,7 +56,7 @@ public class VoteService {
         Vote vote;
         PollOption pollOption = optionRepository.getById(voteForm.getOptionId());
         if (voteForm.getVoteId() == null) {
-            vote = new Vote(pollOption, voteForm.getOpinion());
+            vote = new Vote(voteForm.getVoteId(), pollOption, voteForm.getOpinion());
         } else {
             vote = this.voteRepository.getById(voteForm.getVoteId());
             vote.setOpinion(voteForm.getOpinion());
@@ -65,4 +65,7 @@ public class VoteService {
         return vote;
     }
 
+    public Vote getVoteById(Long id) {
+        return this.voteRepository.getById(id);
+    }
 }

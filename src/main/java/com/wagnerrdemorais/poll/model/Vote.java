@@ -28,7 +28,8 @@ public class Vote {
      * @param pollOption PollOption
      * @param opinion String
      */
-    public Vote(PollOption pollOption, String opinion) {
+    public Vote(Long id, PollOption pollOption, String opinion) {
+        this.id = id;
         this.pollOption = pollOption;
         this.opinion = opinion;
     }

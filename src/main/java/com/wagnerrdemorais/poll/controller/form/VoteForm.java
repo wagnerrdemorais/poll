@@ -14,6 +14,12 @@ public class VoteForm {
         this.opinion = opinion;
     }
 
+    public VoteForm(Long voteId, Long optionId, String opinion) {
+        this.voteId = voteId;
+        this.optionId = optionId;
+        this.opinion = opinion;
+    }
+
     public Long getVoteId() {
         return voteId;
     }

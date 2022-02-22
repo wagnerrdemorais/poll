@@ -16,6 +16,9 @@ import java.util.Map;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+/**
+ * Helps with repository method mocking
+ */
 public class PollRepoTestHelper {
 
     @Resource
@@ -28,6 +31,9 @@ public class PollRepoTestHelper {
     final Map<Long, PollOption> optionMap = new LinkedHashMap<>();
     final Map<Long, Vote> voteMap = new LinkedHashMap<>();
 
+    /**
+     * Initialize mocks
+     */
     public PollRepoTestHelper() {
         this.pollRepository = Mockito.mock(PollRepository.class);
         this.optionRepository = Mockito.mock(OptionRepository.class);
@@ -37,6 +43,9 @@ public class PollRepoTestHelper {
         mockPollVoteRepo();
     }
 
+    /**
+     * Mocks for poll Repository
+     */
     private void mockPollRepo() {
         mockPollRepoFindAll();
         mockPollRepoGetById();
@@ -45,11 +54,17 @@ public class PollRepoTestHelper {
         mockPollRepoExistsById();
     }
 
+    /**
+     * Mocks for poll Option repository
+     */
     private void mockPollOptionRepo() {
         mockOptionRepoGetById();
         mockOptionRepoSave();
     }
 
+    /**
+     * Mocks for Poll Vote Repository
+     */
     private void mockPollVoteRepo() {
         mockVoteSave();
         mockVoteGetById();

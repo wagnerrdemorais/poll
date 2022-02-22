@@ -30,9 +30,6 @@ public class PollDto {
         this.optionList = optionList;
     }
 
-    /**
-     * No args constructor
-     */
     public PollDto() {
     }
 
@@ -48,24 +45,12 @@ public class PollDto {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public List<PollOptionDto> getOptionList() {
         return optionList;
-    }
-
-    public void setOptionList(List<PollOptionDto> optionList) {
-        this.optionList = optionList;
     }
 
     /**

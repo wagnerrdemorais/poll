@@ -18,7 +18,8 @@ public class VoteService {
 
     /**
      * All args constructor
-     * @param voteRepository VoteRepository
+     *
+     * @param voteRepository   VoteRepository
      * @param optionRepository OptionRepository
      */
     public VoteService(VoteRepository voteRepository, OptionRepository optionRepository) {
@@ -28,6 +29,7 @@ public class VoteService {
 
     /**
      * Saves the given Vote and returns the saved object
+     *
      * @param vote Vote
      * @return Vote
      */
@@ -37,6 +39,7 @@ public class VoteService {
 
     /**
      * Converts given VoteForm To Vote, saves it and return the saved object
+     *
      * @param voteForm VoteForm
      * @return Vote
      */
@@ -49,6 +52,7 @@ public class VoteService {
 
     /**
      * Converts VoteForm to Vote
+     *
      * @param voteForm VoteForm
      * @return Vote
      */

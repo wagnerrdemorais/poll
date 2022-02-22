@@ -16,15 +16,7 @@ class VoteServiceTest extends PollRepoTestHelper {
 
     @BeforeEach
     void setUp() {
-
-        Map<Long, PollOption> mockPollOptionMap = Map.of(1L, new PollOption(1L, "Option1", new ArrayList<>()),
-                2L, new PollOption(2L, "Option2", new ArrayList<>()));
-
-        Map<Long, Vote> mockVoteMap = Map.of(1L, new Vote(1L, mockPollOptionMap.get(1L), "opinion1"),
-                2L, new Vote(2L, mockPollOptionMap.get(2L), "opinion2"));
-
-        voteMap.putAll(mockVoteMap);
-        optionMap.putAll(mockPollOptionMap);
+        initializeVotesAndOptions();
 
         this.subject = new VoteService(voteRepository, optionRepository);
     }
@@ -52,5 +44,19 @@ class VoteServiceTest extends PollRepoTestHelper {
         Vote savedVote = subject.saveVote(voteForm);
 
         Assertions.assertEquals("testOp", savedVote.getOpinion());
+    }
+
+    /**
+     * Initializes voteMap and optionMap with test data
+     */
+    private void initializeVotesAndOptions() {
+        Map<Long, PollOption> mockPollOptionMap = Map.of(1L, new PollOption(1L, "Option1", new ArrayList<>()),
+                2L, new PollOption(2L, "Option2", new ArrayList<>()));
+
+        Map<Long, Vote> mockVoteMap = Map.of(1L, new Vote(1L, mockPollOptionMap.get(1L), "opinion1"),
+                2L, new Vote(2L, mockPollOptionMap.get(2L), "opinion2"));
+
+        voteMap.putAll(mockVoteMap);
+        optionMap.putAll(mockPollOptionMap);
     }
 }

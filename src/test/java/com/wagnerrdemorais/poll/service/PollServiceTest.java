@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class PollServiceTest extends PollRepoTestHelper {
 
@@ -18,25 +19,14 @@ class PollServiceTest extends PollRepoTestHelper {
 
     @BeforeEach
     void setUp() {
-
-        pollMap.putAll(Map.of(
-                1L,
-                new Poll(1L, "Poll1", "Poll1 Description",
-                        List.of(new PollOption(1L, "Option1", new ArrayList<>()),
-                                new PollOption(2L, "Option2", new ArrayList<>()))),
-                2L,
-                new Poll(2L, "Poll2", "Poll2 Description",
-                        List.of(new PollOption(3L, "Option3", new ArrayList<>()),
-                                new PollOption(4L, "Option4", new ArrayList<>())))
-        ));
-
-        this.subject = new PollService(pollRepository, optionRepository);
+        createsInitialDataForPollRepo();
+        this.subject = new PollService(super.pollRepository, super.optionRepository);
     }
 
     @Test
     void givenTwoPolls_whenGetPollList_shouldReturnTwoPolls() {
         List<Poll> pollList = subject.getPollList();
-        verify(pollRepository, times(1)).findAll();
+        verify(super.pollRepository, times(1)).findAll();
         assertEquals(2, pollList.size());
     }
 
@@ -92,4 +82,19 @@ class PollServiceTest extends PollRepoTestHelper {
         assertFalse(subject.pollExistsById(3L));
     }
 
+    /**
+     * Initializes pollMap with test data
+     */
+    private void createsInitialDataForPollRepo() {
+        super.pollMap.putAll(Map.of(
+                1L,
+                new Poll(1L, "Poll1", "Poll1 Description",
+                        List.of(new PollOption(1L, "Option1", new ArrayList<>()),
+                                new PollOption(2L, "Option2", new ArrayList<>()))),
+                2L,
+                new Poll(2L, "Poll2", "Poll2 Description",
+                        List.of(new PollOption(3L, "Option3", new ArrayList<>()),
+                                new PollOption(4L, "Option4", new ArrayList<>())))
+        ));
+    }
 }

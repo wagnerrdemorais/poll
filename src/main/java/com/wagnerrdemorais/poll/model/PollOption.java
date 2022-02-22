@@ -36,8 +36,9 @@ public class PollOption {
 
     /**
      * All args Constructor
-     * @param id Long
-     * @param title String
+     *
+     * @param id       Long
+     * @param title    String
      * @param voteList List<Vote>
      */
     public PollOption(Long id, String title, List<Vote> voteList) {

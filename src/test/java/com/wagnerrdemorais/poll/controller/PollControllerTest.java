@@ -51,11 +51,19 @@ class PollControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String dtoToUpdate = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        PollForm toUpdate = createAndUpdateFormFromDto(dtoToUpdate,"test1","test2", "test3");
+        String dtoToUpdate = runGetById("1").
+                andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-        String updated = runUpdate(toUpdate).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        String updated1 = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        PollForm toUpdate = createAndUpdateFormFromDto(dtoToUpdate, "test1", "test2", "test3");
+
+        String updated = runUpdate(toUpdate)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String updated1 = runGetById("1")
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         assertEquals(updated, updated1);
     }
@@ -99,7 +107,10 @@ class PollControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String dtoResponse = runGetById("1").andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String dtoResponse = runGetById("1")
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
         PollDto pollDto = new ObjectMapper().readValue(dtoResponse, PollDto.class);
 
         assertEquals(1L, pollDto.getId());
@@ -133,22 +144,22 @@ class PollControllerTest {
 
     private ResultActions runAdd(String content) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post("/poll/add")
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON));
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
     }
 
     private ResultActions runUpdate(PollForm updatedForm) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.put("/poll/update")
-                        .content(asJsonString(updatedForm))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON));
+                .content(asJsonString(updatedForm))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
 
     }
 
     private ResultActions runDelete(String id) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.delete("/poll/delete")
-                        .param("id", id));
+                .param("id", id));
     }
 
     private PollForm createTestPollForm() {

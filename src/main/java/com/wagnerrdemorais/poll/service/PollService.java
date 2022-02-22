@@ -68,13 +68,13 @@ public class PollService {
      * @return Poll
      */
     public Poll savePoll(PollForm pollForm) {
-
         Poll poll = getPollFromFormUpdatingOptions(pollForm);
         return this.savePoll(poll);
     }
 
     /**
      * Delete Poll by its Id
+     *
      * @param id Long
      */
     public void deleteById(Long id) {
@@ -83,6 +83,7 @@ public class PollService {
 
     /**
      * Check if Poll exists in database
+     *
      * @param id Long
      * @return boolean
      */
@@ -92,6 +93,7 @@ public class PollService {
 
     /**
      * Return a Poll from given PollForm
+     *
      * @param pollForm PollForm
      * @return Poll
      */
@@ -114,8 +116,9 @@ public class PollService {
 
     /**
      * For given List<PollOptionForm>, converts to PollOption saves all options, returning all saved PollOption
+     *
      * @param optionFormList List<PollOptionForm>
-     * @param poll Poll
+     * @param poll           Poll
      * @return List<PollOption>
      */
     private List<PollOption> updatePollOptions(List<PollOptionForm> optionFormList, Poll poll) {

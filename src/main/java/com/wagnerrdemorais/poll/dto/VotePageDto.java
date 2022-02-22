@@ -45,8 +45,8 @@ public class VotePageDto {
 
         /**
          * All args Constructor
-         * @param optionTitle
-         * @param optionLink
+         * @param optionTitle String
+         * @param optionLink String
          */
         public PollOptionLink(String optionTitle, String optionLink) {
             this.optionTitle = optionTitle;

@@ -25,8 +25,9 @@ public class Vote {
 
     /**
      * All args constructor
+     *
      * @param pollOption PollOption
-     * @param opinion String
+     * @param opinion    String
      */
     public Vote(Long id, PollOption pollOption, String opinion) {
         this.id = id;

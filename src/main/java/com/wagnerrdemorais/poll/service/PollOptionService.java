@@ -14,6 +14,7 @@ public class PollOptionService {
 
     /**
      * All args Constructor
+     *
      * @param optionRepository OptionRepository
      */
     public PollOptionService(OptionRepository optionRepository) {
@@ -22,6 +23,7 @@ public class PollOptionService {
 
     /**
      * Return PollOption for given ID
+     *
      * @param id Long
      * @return PollOption
      */
@@ -31,6 +33,7 @@ public class PollOptionService {
 
     /**
      * Saves PollOption to database
+     *
      * @param pollOption PollOption
      * @return PollOption
      */

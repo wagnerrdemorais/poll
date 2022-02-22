@@ -48,7 +48,7 @@ public class PollController {
      * the saved object Dto.
      *
      * @param pollForm PollForm
-     * @return ResponseEntity<List<VotePageDto.PollOptionLink>>
+     * @return ResponseEntity<List < VotePageDto.PollOptionLink>>
      */
     @PostMapping("/add")
     public ResponseEntity<List<VotePageDto.PollOptionLink>> addPoll(@RequestBody PollForm pollForm) {
@@ -110,6 +110,7 @@ public class PollController {
 
     /**
      * Given a Poll, generates a List of links for voting
+     *
      * @param savedPoll Poll
      * @return List<VotePageDto.PollOptionLink>
      */
@@ -118,7 +119,7 @@ public class PollController {
                 .map(opt -> {
                     String href = WebMvcLinkBuilder
                             .linkTo(VoteController.class)
-                            .slash("new?optId=" + opt.getId()+"&opinion=")
+                            .slash("new?optId=" + opt.getId() + "&opinion=")
                             .withSelfRel().getHref();
                     return new VotePageDto.PollOptionLink(opt.getTitle(), href);
 

@@ -40,7 +40,7 @@ class PollControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String testOptionLink = "[{\"optionTitle\":\"TestOption\",\"optionLink\":\"http://localhost/votes/vote?optId=1&opinion=\"}]";
+        String testOptionLink = "[{\"optionTitle\":\"TestOption\",\"optionLink\":\"http://localhost/votes/newVote?optId=1&opinion=\"}]";
         assertEquals(testOptionLink, response);
     }
 

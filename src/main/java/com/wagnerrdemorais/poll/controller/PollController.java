@@ -119,7 +119,7 @@ public class PollController {
                 .map(opt -> {
                     String href = WebMvcLinkBuilder
                             .linkTo(VoteController.class)
-                            .slash("vote?optId=" + opt.getId() + "&opinion=")
+                            .slash("newVote?optId=" + opt.getId() + "&opinion=")
                             .withSelfRel().getHref();
                     return new VotePageDto.PollOptionLink(opt.getTitle(), href);
                 }).collect(Collectors.toList());

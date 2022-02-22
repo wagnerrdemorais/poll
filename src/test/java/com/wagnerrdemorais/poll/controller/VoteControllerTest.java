@@ -48,12 +48,10 @@ class VoteControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         VoteForm voteForm = new VoteForm(1L, null);
-
         runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
         voteForm = new VoteForm(1L, "test");
-
         runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -67,13 +65,50 @@ class VoteControllerTest {
 
     @Test
     @DirtiesContext
+    void givenNewVote_whenUpdateVote_thenVoteShouldBeUpdated() throws Exception {
+        runAdd(asJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        VoteForm voteForm = new VoteForm(1L, null);
+        runNewVote(asJsonString(voteForm)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        voteForm = new VoteForm(1L,1L, "test");
+        runUpdateVote(asJsonString(voteForm)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String contentAsString = runGetVotes("1")
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String expected = "{\"pollTitle\":\"TestTitle\",\"pollDescription\":\"TestDescription\",\"optionVotes\":[{\"optionTitle\":\"TestOption\",\"voteCount\":1,\"opinions\":[\"test\"]}]}";
+        Assertions.assertEquals(expected, contentAsString);
+    }
+
+    @Test
+    @DirtiesContext
+    void givenAVoteToUpdate_whenRequestingToNewVote_shouldRespondWithBadRequest() throws Exception {
+        VoteForm voteForm = new VoteForm(1L,1L, null);
+        runNewVote(asJsonString(voteForm)).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext
     void givenEmptyPolls_whenGetVotesWithNonExistingId_thenShouldRespondWithBadRequest() throws Exception {
         runGetVotes("1")
                 .andExpect(status().isBadRequest());
     }
 
     private ResultActions runNewVote(String content) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.post("/votes/vote")
+        return mockMvc.perform(MockMvcRequestBuilders.post("/votes/newVote")
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions runUpdateVote(String content) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post("/votes/updateVote")
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));

@@ -38,13 +38,29 @@ public class VoteController {
     }
 
     /**
+     * Receives a VoteForm and register it
+     *
+     * @param voteForm VoteForm
+     * @return ResponseEntity<VoteDto>
+     */
+    @PostMapping("/newVote")
+    public ResponseEntity<VoteDto> vote(@RequestBody VoteForm voteForm) {
+        if (voteForm.getVoteId() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Vote vote = voteService.saveVote(voteForm);
+        VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());
+        return ResponseEntity.ok(voteDto);
+    }
+
+    /**
      * Receives an optionId and opinion to generate a new vote
      *
      * @param voteForm VoteForm
      * @return ResponseEntity<VoteDto>
      */
-    @PostMapping("/vote")
-    public ResponseEntity<VoteDto> vote(@RequestBody VoteForm voteForm) {
+    @PostMapping("/updateVote")
+    public ResponseEntity<VoteDto> uppdateVote(@RequestBody VoteForm voteForm) {
         Vote vote = voteService.saveVote(voteForm);
         VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());
         return ResponseEntity.ok(voteDto);

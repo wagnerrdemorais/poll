@@ -62,6 +62,28 @@ class AuthenticationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DirtiesContext
+    void rateLimit() throws Exception {
+        NewUserForm newUserForm = new NewUserForm();
+        newUserForm.setUsername("test");
+        newUserForm.setPassword("test");
+
+        runAdd(newUserForm)
+                .andExpect(status().isOk());
+
+        LoginForm loginForm = new LoginForm();
+        loginForm.setUsername("test");
+        loginForm.setPassword("test");
+
+        for (int i = 0; i < 20; i++) {
+            runLogin(loginForm)
+                    .andExpect(status().isOk());
+        }
+        runLogin(loginForm)
+                .andExpect(status().isTooManyRequests());
+    }
+
     private ResultActions runAdd(NewUserForm content) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post("/users/new")
                 .content(asJsonString(content))

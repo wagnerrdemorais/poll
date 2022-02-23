@@ -1,5 +1,6 @@
 package com.wagnerrdemorais.poll.controller;
 
+import com.wagnerrdemorais.poll.config.bean.RateConfigBean;
 import com.wagnerrdemorais.poll.controller.form.LoginForm;
 import com.wagnerrdemorais.poll.service.TokenService;
 import io.github.bucket4j.Bandwidth;
@@ -27,11 +28,14 @@ public class AuthenticationController {
     private final TokenService tokenService;
     private final Bucket bucket;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, TokenService tokenService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, TokenService tokenService, RateConfigBean rateConfigBean) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
 
-        Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+        Bandwidth limit = Bandwidth.classic(rateConfigBean.getCapacity(),
+                Refill.greedy(rateConfigBean.getTokens(),
+                        Duration.ofMinutes(rateConfigBean.getMinute())));
+
         this.bucket = Bucket4j.builder()
                 .addLimit(limit)
                 .build();

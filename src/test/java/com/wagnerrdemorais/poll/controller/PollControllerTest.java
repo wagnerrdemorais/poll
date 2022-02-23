@@ -154,7 +154,6 @@ class PollControllerTest {
                 .content(asJsonString(updatedForm))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
-
     }
 
     private ResultActions runDelete(String id) throws Exception {

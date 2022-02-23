@@ -60,7 +60,7 @@ public class VoteController {
      * @return ResponseEntity<VoteDto>
      */
     @PostMapping("/updateVote")
-    public ResponseEntity<VoteDto> uppdateVote(@RequestBody VoteForm voteForm) {
+    public ResponseEntity<VoteDto> updateVote(@RequestBody VoteForm voteForm) {
         Vote vote = voteService.saveVote(voteForm);
         VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());
         return ResponseEntity.ok(voteDto);

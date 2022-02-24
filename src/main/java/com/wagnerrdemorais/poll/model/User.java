@@ -20,6 +20,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
+    @OneToMany
+    private List<Poll> pollList;
+
     /**
      * The User can have many Roles, with eager fetch type
      */
@@ -69,6 +72,14 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public List<Poll> getPollList() {
+        return pollList;
+    }
+
+    public void setPollList(List<Poll> pollList) {
+        this.pollList = pollList;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles;
@@ -98,4 +109,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

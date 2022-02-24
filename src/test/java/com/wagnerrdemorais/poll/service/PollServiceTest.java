@@ -2,6 +2,7 @@ package com.wagnerrdemorais.poll.service;
 
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
+import com.wagnerrdemorais.poll.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-class PollServiceTest extends PollRepoTestHelper {
+class PollServiceTest extends RepoTestHelper {
 
     PollService subject;
 
     @BeforeEach
     void setUp() {
         createsInitialDataForPollRepo();
-        this.subject = new PollService(super.pollRepository, super.optionRepository);
+        this.subject = new PollService(super.pollRepository, super.optionRepository, super.userRepository);
     }
 
     @Test
@@ -46,7 +47,8 @@ class PollServiceTest extends PollRepoTestHelper {
     void givenPollList_whenSavePoll_shouldReturnSavedPoll() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
-                        new PollOption(6L, "Option2", new ArrayList<>())));
+                        new PollOption(6L, "Option2", new ArrayList<>())),
+                null);
 
         Poll savedPoll = subject.savePoll(pollToSave);
         assertEquals(pollToSave, savedPoll);
@@ -59,7 +61,8 @@ class PollServiceTest extends PollRepoTestHelper {
     void givenPollList_andNewPoll_whenDeletePollById_shouldDeleteAccordingly() {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
-                        new PollOption(6L, "Option2", new ArrayList<>())));
+                        new PollOption(6L, "Option2", new ArrayList<>())),
+                null);
         subject.savePoll(pollToSave);
 
         Poll pollById = subject.getPollById(5L);
@@ -82,6 +85,24 @@ class PollServiceTest extends PollRepoTestHelper {
         assertFalse(subject.pollExistsById(3L));
     }
 
+    @Test
+    void givenPollWithUser_thenCheckIfPollHasUser_thenShouldReturnTrue() {
+        assertTrue(subject.hasUser(1L));
+    }
+
+    @Test
+    void givenPollWithoutUser_thenCheckIfPollHasUser_thenShouldReturnFalse() {
+        assertFalse(subject.hasUser(2L));
+    }
+
+    //TODO mock findAllByuserId in repo
+//    @Test
+    void givenPollWithUser_whenGetPollListByUser_thenShouldReturnPollList() {
+        createsInitialDataForPollRepo();
+        List<Poll> poolListByUserId = subject.findAllByUserId(1L);
+        assertEquals(1L, poolListByUserId.size());
+    }
+
     /**
      * Initializes pollMap with test data
      */
@@ -90,11 +111,13 @@ class PollServiceTest extends PollRepoTestHelper {
                 1L,
                 new Poll(1L, "Poll1", "Poll1 Description",
                         List.of(new PollOption(1L, "Option1", new ArrayList<>()),
-                                new PollOption(2L, "Option2", new ArrayList<>()))),
+                                new PollOption(2L, "Option2", new ArrayList<>())),
+                        new User(1L, "user", "user")),
                 2L,
                 new Poll(2L, "Poll2", "Poll2 Description",
                         List.of(new PollOption(3L, "Option3", new ArrayList<>()),
-                                new PollOption(4L, "Option4", new ArrayList<>())))
+                                new PollOption(4L, "Option4", new ArrayList<>())),
+                        null)
         ));
     }
 }

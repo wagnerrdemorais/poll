@@ -18,6 +18,9 @@ public class Poll {
 
     private String description;
 
+    @ManyToOne
+    private User user;
+
     /**
      * A Poll can have multiple PollOption values, but the PollOption must have only one Poll
      */
@@ -38,11 +41,12 @@ public class Poll {
      * @param description String
      * @param optionList  List<PollOption>
      */
-    public Poll(Long id, String title, String description, List<PollOption> optionList) {
+    public Poll(Long id, String title, String description, List<PollOption> optionList, User user) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.optionList = optionList;
+        this.user = user;
     }
 
     public Long getId() {
@@ -73,5 +77,12 @@ public class Poll {
         this.optionList = optionList;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
 

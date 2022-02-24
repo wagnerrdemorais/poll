@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Map;
 
-class VoteServiceTest extends PollRepoTestHelper {
+class VoteServiceTest extends RepoTestHelper {
 
     VoteService subject;
 

@@ -2,6 +2,8 @@ package com.wagnerrdemorais.poll.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wagnerrdemorais.poll.controller.form.LoginForm;
+import com.wagnerrdemorais.poll.controller.form.NewUserForm;
 import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
 import com.wagnerrdemorais.poll.dto.PollDto;
@@ -127,6 +129,102 @@ class PollControllerTest extends ControllerTestHelper {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DirtiesContext
+    void test() throws Exception {
+        NewUserForm newUserForm = new NewUserForm();
+        newUserForm.setUsername("test");
+        newUserForm.setPassword("test");
+
+        runNewUser(mockMvc, objectAsJsonString(newUserForm))
+                .andExpect(status().isOk());
+
+        PollForm testPollForm = createTestPollFormWithUser(1L);
+        runAddPoll(mockMvc, objectAsJsonString(testPollForm))
+                .andExpect(status().isOk());
+
+        String response = runGetPollByUserId(mockMvc, "1")
+                .andExpect(status().isOk()).andReturn()
+                .getResponse().getContentAsString();
+
+        String expected = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        assertEquals(expected, response);
+    }
+
+    @Test
+    @DirtiesContext
+    void test1() throws Exception {
+        NewUserForm newUserForm = new NewUserForm();
+        newUserForm.setUsername("test");
+        newUserForm.setPassword("test");
+
+        runNewUser(mockMvc, objectAsJsonString(newUserForm))
+                .andExpect(status().isOk());
+
+        PollForm testPollForm = createTestPollFormWithUser(1L);
+        runAddPoll(mockMvc, objectAsJsonString(testPollForm))
+                .andExpect(status().isOk());
+
+        runAddPoll(mockMvc, objectAsJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String response = runGetPollListWithoutUser(mockMvc)
+                .andExpect(status().isOk()).andReturn()
+                .getResponse().getContentAsString();
+
+        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        assertEquals(expected, response);
+    }
+
+    @Test
+    @DirtiesContext
+    void test2() throws Exception {
+        NewUserForm newUserForm = new NewUserForm();
+        newUserForm.setUsername("test");
+        newUserForm.setPassword("test");
+
+        runNewUser(mockMvc, objectAsJsonString(newUserForm))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        LoginForm loginForm = new LoginForm();
+        loginForm.setUsername("test");
+        loginForm.setPassword("test");
+
+        String jwtToken = runLogin(mockMvc, loginForm)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        PollForm testPollForm = createTestPollFormWithUser(1L);
+        runAddPoll(mockMvc, objectAsJsonString(testPollForm))
+                .andExpect(status().isOk());
+
+        runAddPoll(mockMvc, objectAsJsonString(createTestPollForm()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String response = runClaimPolls(mockMvc, jwtToken)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        assertEquals(expected, response);
+
+        String expected1 = "[]";
+        String response1 = runClaimPolls(mockMvc, jwtToken)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertEquals(expected1, response1);
+
+        String myPolls = runGetMyPolls(mockMvc, jwtToken)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String expec = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]},{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+
+        assertEquals(expec, myPolls);
+    }
+
     private ResultActions runGetById(String id) throws Exception {
         return this.mockMvc.perform(get("/polls/get")
                         .param("id", id))
@@ -148,6 +246,18 @@ class PollControllerTest extends ControllerTestHelper {
         pollForm.setDescription("TestDescription");
         pollForm.setTitle("TestTitle");
         pollForm.setOptionList(List.of(pollOptionForm));
+        return pollForm;
+    }
+
+    private PollForm createTestPollFormWithUser(Long userId) {
+        PollOptionForm pollOptionForm = new PollOptionForm();
+        pollOptionForm.setTitle("TestOption");
+
+        PollForm pollForm = new PollForm();
+        pollForm.setDescription("TestDescription");
+        pollForm.setTitle("TestTitle");
+        pollForm.setOptionList(List.of(pollOptionForm));
+        pollForm.setUserId(userId);
         return pollForm;
     }
 

@@ -11,6 +11,7 @@ public class PollForm {
     Long id;
     String title;
     String description;
+    Long userId;
     List<PollOptionForm> optionList = new ArrayList<>();
 
     public Long getId() {
@@ -45,4 +46,11 @@ public class PollForm {
         this.optionList = optionList;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

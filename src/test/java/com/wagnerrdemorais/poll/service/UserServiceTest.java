@@ -3,55 +3,19 @@ package com.wagnerrdemorais.poll.service;
 import com.wagnerrdemorais.poll.controller.form.NewUserForm;
 import com.wagnerrdemorais.poll.controller.form.UpdateUserForm;
 import com.wagnerrdemorais.poll.model.User;
-import com.wagnerrdemorais.poll.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
-
-class UserServiceTest {
+class UserServiceTest extends RepoTestHelper {
 
     private UserService subject;
-    private final Map<Long, User> userMap = new HashMap<>();
 
     @BeforeEach
     void setup() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-
-        when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocationOnMock -> {
-            User argument = (User) invocationOnMock.getArguments()[0];
-            userMap.put(argument.getId(), argument);
-            return argument;
-        });
-
-        when(userRepository.getById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
-            Long argument = (Long) invocationOnMock.getArguments()[0];
-            return userMap.get(argument);
-        });
-
-        doAnswer(invocationOnMock -> {
-            Long id = (Long) invocationOnMock.getArguments()[0];
-            userMap.remove(id);
-            return null;
-        }).when(userRepository).deleteById(Mockito.anyLong());
-
-        when(userRepository.findAll())
-                .thenAnswer(invocationOnMock -> new ArrayList<>(userMap.values()));
-
-        when(userRepository.existsById(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
-            Long argument = (Long) invocationOnMock.getArguments()[0];
-            return userMap.containsKey(argument);
-        });
-
         this.subject = new UserService(userRepository);
     }
 

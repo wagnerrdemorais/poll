@@ -2,14 +2,16 @@ package com.wagnerrdemorais.poll.service;
 
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
+import com.wagnerrdemorais.poll.model.User;
 import com.wagnerrdemorais.poll.model.Vote;
 import com.wagnerrdemorais.poll.repository.OptionRepository;
 import com.wagnerrdemorais.poll.repository.PollRepository;
+import com.wagnerrdemorais.poll.repository.UserRepository;
 import com.wagnerrdemorais.poll.repository.VoteRepository;
 import org.mockito.Mockito;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,28 +21,31 @@ import static org.mockito.Mockito.when;
 /**
  * Helps with repository method mocking
  */
-public abstract class PollRepoTestHelper {
+public abstract class RepoTestHelper {
 
-    @Resource
     final PollRepository pollRepository;
-
-    @Resource
     final OptionRepository optionRepository;
+    final UserRepository userRepository;
     final VoteRepository voteRepository;
+
     final Map<Long, Poll> pollMap = new LinkedHashMap<>();
     final Map<Long, PollOption> optionMap = new LinkedHashMap<>();
     final Map<Long, Vote> voteMap = new LinkedHashMap<>();
+    final Map<Long, User> userMap = new HashMap<>();
 
     /**
      * Initialize mocks
      */
-    public PollRepoTestHelper() {
+    public RepoTestHelper() {
         this.pollRepository = Mockito.mock(PollRepository.class);
         this.optionRepository = Mockito.mock(OptionRepository.class);
         this.voteRepository = Mockito.mock(VoteRepository.class);
+        this.userRepository = Mockito.mock(UserRepository.class);
+
         mockPollRepo();
         mockPollOptionRepo();
         mockPollVoteRepo();
+        mockUserRepo();
     }
 
     /**
@@ -68,6 +73,33 @@ public abstract class PollRepoTestHelper {
     private void mockPollVoteRepo() {
         mockVoteSave();
         mockVoteGetById();
+    }
+
+    private void mockUserRepo() {
+        when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocationOnMock -> {
+            User argument = (User) invocationOnMock.getArguments()[0];
+            userMap.put(argument.getId(), argument);
+            return argument;
+        });
+
+        when(userRepository.getById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
+            Long argument = (Long) invocationOnMock.getArguments()[0];
+            return userMap.get(argument);
+        });
+
+        doAnswer(invocationOnMock -> {
+            Long id = (Long) invocationOnMock.getArguments()[0];
+            userMap.remove(id);
+            return null;
+        }).when(userRepository).deleteById(Mockito.anyLong());
+
+        when(userRepository.findAll())
+                .thenAnswer(invocationOnMock -> new ArrayList<>(userMap.values()));
+
+        when(userRepository.existsById(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
+            Long argument = (Long) invocationOnMock.getArguments()[0];
+            return userMap.containsKey(argument);
+        });
     }
 
     private void mockVoteSave() {

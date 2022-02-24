@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @Transactional
-class PollOptionServiceTest extends PollRepoTestHelper {
+class OptionServiceTest extends RepoTestHelper {
 
     PollOptionService subject;
 

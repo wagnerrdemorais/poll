@@ -4,8 +4,10 @@ import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
+import com.wagnerrdemorais.poll.model.User;
 import com.wagnerrdemorais.poll.repository.OptionRepository;
 import com.wagnerrdemorais.poll.repository.PollRepository;
+import com.wagnerrdemorais.poll.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,16 +22,19 @@ public class PollService {
 
     private final PollRepository pollRepository;
     private final OptionRepository optionRepository;
+    private final UserRepository userRepository;
 
     /**
      * All args constructor
      *
      * @param pollRepository   PollRepository
      * @param optionRepository OptionRepository
+     * @param userRepository
      */
-    public PollService(PollRepository pollRepository, OptionRepository optionRepository) {
+    public PollService(PollRepository pollRepository, OptionRepository optionRepository, UserRepository userRepository) {
         this.pollRepository = pollRepository;
         this.optionRepository = optionRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -109,9 +114,23 @@ public class PollService {
         poll.setTitle(pollForm.getTitle());
         poll.setDescription(pollForm.getDescription());
 
+        if (pollForm.getUserId() != null) {
+            User user = userRepository.getById(pollForm.getUserId());
+            poll.setUser(user);
+        }
+
         List<PollOption> optionList = updatePollOptions(pollForm.getOptionList(), poll);
         poll.setOptionList(optionList);
         return poll;
+    }
+
+    public boolean hasUser(Long pollId) {
+        Poll poll = pollRepository.getById(pollId);
+        return poll.getUser() != null;
+    }
+
+    public List<Poll> findAllByUserId(Long userId) {
+        return pollRepository.findAllByUserId(userId);
     }
 
     /**
@@ -134,5 +153,9 @@ public class PollService {
                     }
                     return optionRepository.save(pollOption);
                 }).collect(Collectors.toList());
+    }
+
+    public List<Poll> saveAll(List<Poll> pollList) {
+        return pollRepository.saveAll(pollList);
     }
 }

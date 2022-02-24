@@ -4,11 +4,15 @@ import com.wagnerrdemorais.poll.controller.form.PollForm;
 import com.wagnerrdemorais.poll.dto.PollDto;
 import com.wagnerrdemorais.poll.dto.VotePageDto;
 import com.wagnerrdemorais.poll.model.Poll;
+import com.wagnerrdemorais.poll.model.User;
 import com.wagnerrdemorais.poll.service.PollService;
+import com.wagnerrdemorais.poll.service.UserService;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,14 +24,17 @@ import java.util.stream.Collectors;
 public class PollController {
 
     private final PollService pollService;
+    private final UserService userService;
 
     /**
      * Constructor receiving an instance of PollService
      *
      * @param pollService PollService
+     * @param userService UserService
      */
-    public PollController(PollService pollService) {
+    public PollController(PollService pollService, UserService userService) {
         this.pollService = pollService;
+        this.userService = userService;
     }
 
     /**
@@ -74,6 +81,36 @@ public class PollController {
         Poll updatedPoll = pollService.savePoll(pollForm);
         PollDto pollDto = PollDto.fromEntity(updatedPoll);
         return ResponseEntity.ok(pollDto);
+    }
+
+    @PutMapping("/claimPolls")
+    public ResponseEntity<List<PollDto>> claimPolls() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Poll> pollList = pollService.findAllByUserId(null);
+
+        pollList.forEach(poll -> poll.setUser(user));
+
+        List<Poll> pollList1 = pollService.saveAll(pollList);
+
+        List<PollDto> pollDtoList = pollList1.stream()
+                .map(PollDto::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pollDtoList);
+    }
+
+    @GetMapping("/myPolls")
+    public ResponseEntity<List<PollDto>> myPools() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Poll> pollList = pollService.findAllByUserId(user.getId());
+
+        List<PollDto> pollDtoList = pollList.stream()
+                .map(PollDto::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pollDtoList);
     }
 
     /**
@@ -124,4 +161,36 @@ public class PollController {
                     return new VotePageDto.PollOptionLink(opt.getTitle(), href);
                 }).collect(Collectors.toList());
     }
+
+    @GetMapping("/listByUserId")
+    public ResponseEntity<List<PollDto>> getListByUserId(Long userId) {
+        if (userId == null || !userService.userExistsById(userId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Poll> poolListByUserId = pollService.findAllByUserId(userId);
+        List<PollDto> pollDtoList = new ArrayList<>();
+        if (poolListByUserId != null) {
+            pollDtoList = poolListByUserId.stream()
+                    .map(PollDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseEntity.ok(pollDtoList);
+    }
+
+    @GetMapping("/listWithoutUser")
+    public ResponseEntity<List<PollDto>> listWithoutUser() {
+
+        List<Poll> poolListByUserId = pollService.findAllByUserId(null);
+        List<PollDto> pollDtoList = new ArrayList<>();
+        if (poolListByUserId != null) {
+            pollDtoList = poolListByUserId.stream()
+                    .map(PollDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseEntity.ok(pollDtoList);
+    }
+
 }

@@ -24,7 +24,7 @@ class UserServiceTest {
     private final Map<Long, User> userMap = new HashMap<>();
 
     @BeforeEach
-    private void setup() {
+    void setup() {
         UserRepository userRepository = Mockito.mock(UserRepository.class);
 
         when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocationOnMock -> {
@@ -56,7 +56,7 @@ class UserServiceTest {
     }
 
     @Test
-    void addUser() {
+    void givenNewUser_whenAddUser_thenUserShouldBeAdded() {
         NewUserForm user = new NewUserForm();
         user.setUsername("test");
         user.setPassword("test");
@@ -69,7 +69,7 @@ class UserServiceTest {
     }
 
     @Test
-    void saveUser() {
+    void givenNewUser_whenSaveUser_thenUserShouldBeSaved() {
         User user = new User();
         user.setUsername("test");
         user.setPassword("test");
@@ -82,7 +82,7 @@ class UserServiceTest {
     }
 
     @Test
-    void listUsers() {
+    void givenAListOfUsers_whenListUsers_thenShouldReturnUserList() {
         User user1 = new User(1L, "test", "test");
         User user2 = new User(2L, "test2", "test2");
 
@@ -94,7 +94,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser() {
+    void givenAUser_whenUpdateUser_thenUserShouldBeUpdated() {
         User user1 = new User(1L, "test", "test");
         userMap.put(user1.getId(), user1);
 
@@ -110,7 +110,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserById() {
+    void givenAUser_whenDeleteUserById_thenUserShouldBeDeleted() {
         User user1 = new User(1L, "test", "test");
         userMap.put(user1.getId(), user1);
 
@@ -121,16 +121,21 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById() {
+    void givenAUser_whenGetUserById_thenShouldReturnCorrespondingUser() {
         User user1 = new User(1L, "test", "test");
         userMap.put(user1.getId(), user1);
         Assertions.assertEquals(user1, subject.getUserById(1L));
     }
 
     @Test
-    void existsById() {
+    void givenAUser_whenCheckingIfExistsById_thenShouldReturnTrue() {
         User user1 = new User(1L, "test", "test");
         userMap.put(user1.getId(), user1);
         Assertions.assertTrue(subject.userExistsById(1L));
+    }
+
+    @Test
+    void givenNoUser_whenCheckingIfExistsById_thenShouldReturnFalse() {
+        Assertions.assertFalse(subject.userExistsById(1L));
     }
 }

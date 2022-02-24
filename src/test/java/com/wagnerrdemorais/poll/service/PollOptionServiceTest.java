@@ -23,13 +23,13 @@ class PollOptionServiceTest extends PollRepoTestHelper {
     }
 
     @Test
-    void getById() {
+    void givenPollWithId2_whenGetGyId_thenShouldReturnCorrespondingPoll() {
         PollOption byId = subject.getById(2L);
         Assertions.assertEquals(2L, byId.getId());
     }
 
     @Test
-    void save() {
+    void givenNewPoll_whenSave_thenPollShouldBeSaved() {
         PollOption option = new PollOption(1L, "Option1", new ArrayList<>());
         PollOption save = subject.save(option);
         Assertions.assertEquals(1L, save.getId());

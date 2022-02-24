@@ -25,23 +25,11 @@ public class VoteDto {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getOpinion() {
         return opinion;
     }
 
-    public void setOpinion(String opinion) {
-        this.opinion = opinion;
-    }
-
     public Long getPollOptionId() {
         return pollOptionId;
-    }
-
-    public void setPollOptionId(Long pollOptionId) {
-        this.pollOptionId = pollOptionId;
     }
 }

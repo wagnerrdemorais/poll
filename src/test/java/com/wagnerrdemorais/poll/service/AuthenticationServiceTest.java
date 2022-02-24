@@ -23,7 +23,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void loadUserByUsername() {
+    void givenUserWithTestUsername_whenLoadUserByUsername_thenShouldReturnCorrespondingUser() {
         UserDetails test = subject.loadUserByUsername("test");
         Assertions.assertEquals("test", test.getUsername());
     }

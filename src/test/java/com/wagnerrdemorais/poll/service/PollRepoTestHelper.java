@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 /**
  * Helps with repository method mocking
  */
-public class PollRepoTestHelper {
+public abstract class PollRepoTestHelper {
 
     @Resource
     final PollRepository pollRepository;

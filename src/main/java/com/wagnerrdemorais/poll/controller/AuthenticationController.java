@@ -65,7 +65,7 @@ public class AuthenticationController {
                 Authentication authentication = authenticationManager.authenticate(loginData);
                 token = tokenService.generateToken(authentication);
             } catch (AuthenticationException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             return ResponseEntity.status(HttpStatus.OK).body(token);
         }

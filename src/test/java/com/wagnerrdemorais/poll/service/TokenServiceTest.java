@@ -17,11 +17,10 @@ class TokenServiceTest {
         subject = new TokenService();
         ReflectionTestUtils.setField(subject, "expiration", "300000");
         ReflectionTestUtils.setField(subject, "secret", "test");
-
     }
 
     @Test
-    void generateToken() {
+    void givenUser_whenAuthenticate_thenShouldReturnToken() {
         User user = new User(1L, "test", "test");
 
         UsernamePasswordAuthenticationToken loginData = Mockito.mock(UsernamePasswordAuthenticationToken.class);
@@ -32,7 +31,7 @@ class TokenServiceTest {
     }
 
     @Test
-    void isValid() {
+    void givenUser_whenGenerateToken_thenTokenShouldBeValid() {
         User user = new User(1L, "test", "test");
 
         UsernamePasswordAuthenticationToken loginData = Mockito.mock(UsernamePasswordAuthenticationToken.class);
@@ -46,7 +45,7 @@ class TokenServiceTest {
     }
 
     @Test
-    void getUserId() {
+    void givenToken_whenGetUserId_thenShouldReturnUserId() {
         User user = new User(1L, "test", "test");
 
         UsernamePasswordAuthenticationToken loginData = Mockito.mock(UsernamePasswordAuthenticationToken.class);

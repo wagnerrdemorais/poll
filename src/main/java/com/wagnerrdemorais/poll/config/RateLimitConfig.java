@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class that retrieves capacity, tokens and minutes for Connection RateLimit
+ */
 @Configuration
 public class RateLimitConfig {
 
@@ -18,7 +21,7 @@ public class RateLimitConfig {
     private Long minutes;
 
     @Bean
-    public RateConfigBean getRateConfig(){
+    public RateConfigBean getRateConfig() {
         return new RateConfigBean(capacity, tokens, minutes);
     }
 

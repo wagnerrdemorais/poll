@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Role entity and represents an authority to an authentication object
+ */
 @Entity
 public class Role implements GrantedAuthority {
 

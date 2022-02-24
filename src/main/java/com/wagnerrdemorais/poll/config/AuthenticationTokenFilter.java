@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Filter for authentication and validating token
+ */
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
@@ -36,6 +39,10 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
+    /**
+     * Validates given JWT Token and proceeds with authentication
+     * @param token String
+     */
     private void authenticate(String token) {
         Long userId = tokenService.getUserId(token);
         Optional<User> userOpt = userRepository.findById(userId);
@@ -45,10 +52,17 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         User user = userOpt.get();
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        UsernamePasswordAuthenticationToken auth
+                = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
+    /**
+     * Retrieves Bearer token from request
+     * @param request HttpServletRequest
+     * @return String
+     */
     private String getToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {

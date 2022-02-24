@@ -14,6 +14,9 @@ public class Vote {
 
     private String opinion;
 
+    /**
+     * One Option can have many votes
+     */
     @ManyToOne(cascade = CascadeType.ALL)
     private PollOption pollOption;
 

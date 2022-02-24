@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Core user information, store user information, and it is used for authentication
+ */
 @Entity
 public class User implements UserDetails {
 
@@ -17,12 +20,24 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
+    /**
+     * The User can have many Roles, with eager fetch type
+     */
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
 
+    /**
+     * No args constructor
+     */
     public User() {
     }
 
+    /**
+     * All args constructor
+     * @param id long
+     * @param username String
+     * @param password String
+     */
     public User(long id, String username, String password) {
         this.id = id;
         this.username = username;

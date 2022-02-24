@@ -1,5 +1,8 @@
 package com.wagnerrdemorais.poll.dto;
 
+/**
+ * Dto with userID and Username
+ */
 public class UserDto {
 
     Long id;

@@ -2,6 +2,9 @@ package com.wagnerrdemorais.poll.dto;
 
 import java.util.List;
 
+/**
+ * Contains the title, description and a list of votes and opinions for each poll Option
+ */
 public class PollVotesDto {
 
     String pollTitle;
@@ -32,6 +35,10 @@ public class PollVotesDto {
         this.optionVotes = optionVotes;
     }
 
+
+    /**
+     * Contains voteCount for each vote with a List of opinions
+     */
     public static class OptionVotesDto {
 
         String optionTitle;

@@ -8,6 +8,7 @@ import com.wagnerrdemorais.poll.model.User;
 import com.wagnerrdemorais.poll.service.PollService;
 import com.wagnerrdemorais.poll.service.UserService;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +86,14 @@ public class PollController {
 
     @PutMapping("/claimPolls")
     public ResponseEntity<List<PollDto>> claimPolls() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user;
+        if (principal instanceof User) {
+            user = (User) principal;
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         List<Poll> pollList = pollService.findAllByUserId(null);
 
@@ -189,6 +197,23 @@ public class PollController {
                     .map(PollDto::fromEntity)
                     .collect(Collectors.toList());
         }
+
+        return ResponseEntity.ok(pollDtoList);
+    }
+
+    @PutMapping("/requireAuth")
+    public ResponseEntity<List<PollDto>> requireAuth(@RequestBody List<Long> pollIds) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Poll> pollList = pollService.findAllByIdInAndUserId(pollIds, user.getId());
+
+        pollList.forEach(poll -> poll.setRequireAuth(true));
+
+        List<Poll> saved = pollService.saveAll(pollList);
+
+        List<PollDto> pollDtoList = saved.stream()
+                .map(PollDto::fromEntity)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(pollDtoList);
     }

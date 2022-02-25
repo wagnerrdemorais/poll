@@ -5,10 +5,14 @@ import com.wagnerrdemorais.poll.dto.PollDto;
 import com.wagnerrdemorais.poll.dto.PollVotesDto;
 import com.wagnerrdemorais.poll.dto.VoteDto;
 import com.wagnerrdemorais.poll.model.Poll;
+import com.wagnerrdemorais.poll.model.PollOption;
 import com.wagnerrdemorais.poll.model.Vote;
+import com.wagnerrdemorais.poll.service.PollOptionService;
 import com.wagnerrdemorais.poll.service.PollService;
 import com.wagnerrdemorais.poll.service.VoteService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,16 +29,19 @@ public class VoteController {
 
     private final VoteService voteService;
     private final PollService pollService;
+    private final PollOptionService pollOptionService;
 
     /**
      * All Args Constructor
      *
-     * @param voteService VoteService
-     * @param pollService PollService
+     * @param voteService       VoteService
+     * @param pollService       PollService
+     * @param pollOptionService
      */
-    public VoteController(VoteService voteService, PollService pollService) {
+    public VoteController(VoteService voteService, PollService pollService, PollOptionService pollOptionService) {
         this.voteService = voteService;
         this.pollService = pollService;
+        this.pollOptionService = pollOptionService;
     }
 
     /**
@@ -45,6 +52,18 @@ public class VoteController {
      */
     @PostMapping("/newVote")
     public ResponseEntity<VoteDto> vote(@RequestBody VoteForm voteForm) {
+        Long optionId = voteForm.getOptionId();
+
+        PollOption pollOption = pollOptionService.getById(optionId);
+        boolean requireAuth = pollOption.getPoll().getRequireAuth();
+
+        if (requireAuth) {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof String) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+
         if (voteForm.getVoteId() != null) {
             return ResponseEntity.badRequest().build();
         }

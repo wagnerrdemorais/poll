@@ -133,6 +133,10 @@ public class PollService {
         return pollRepository.findAllByUserId(userId);
     }
 
+    public List<Poll> findAllByIdInAndUserId(List<Long> ids, Long userId) {
+        return pollRepository.findAllByIdInAndUserId(ids, userId);
+    }
+
     /**
      * For given List<PollOptionForm>, converts to PollOption saves all options, returning all saved PollOption
      *

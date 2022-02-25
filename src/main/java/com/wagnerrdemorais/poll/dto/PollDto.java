@@ -14,19 +14,23 @@ public class PollDto {
     Long id;
     String title;
     String description;
+    boolean requireAuth;
     List<PollOptionDto> optionList;
 
     /**
      * All args Constructor
-     * @param id Long
-     * @param title String
+     *
+     * @param id          Long
+     * @param title       String
      * @param description String
-     * @param optionList List<PollOptionDto>
+     * @param requireAuth boolean
+     * @param optionList  List<PollOptionDto>
      */
-    public PollDto(Long id, String title, String description, List<PollOptionDto> optionList) {
+    public PollDto(Long id, String title, String description, boolean requireAuth, List<PollOptionDto> optionList) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.requireAuth = requireAuth;
         this.optionList = optionList;
     }
 
@@ -56,8 +60,17 @@ public class PollDto {
         return optionList;
     }
 
+    public boolean getRequireAuth() {
+        return requireAuth;
+    }
+
+    public void setRequireAuth(boolean requireAuth) {
+        this.requireAuth = requireAuth;
+    }
+
     /**
      * Receives a Poll and converts it to PollDto
+     *
      * @param poll Poll
      * @return PollDto
      */
@@ -67,11 +80,12 @@ public class PollDto {
                 .map(opt -> new PollOptionDto(opt.getId(), opt.getTitle(), convertVoteToDto(opt.getVoteList())))
                 .collect(Collectors.toList());
 
-        return new PollDto(poll.getId(), poll.getTitle(), poll.getDescription(), pollOptionDtos);
+        return new PollDto(poll.getId(), poll.getTitle(), poll.getDescription(), poll.getRequireAuth(), pollOptionDtos);
     }
 
     /**
      * Given a list of votes generates a list of voteDto
+     *
      * @param voteList List<Vote>
      * @return List<VoteDto>
      */

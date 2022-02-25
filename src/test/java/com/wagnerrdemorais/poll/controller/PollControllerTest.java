@@ -2,10 +2,7 @@ package com.wagnerrdemorais.poll.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wagnerrdemorais.poll.controller.form.LoginForm;
-import com.wagnerrdemorais.poll.controller.form.NewUserForm;
-import com.wagnerrdemorais.poll.controller.form.PollForm;
-import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
+import com.wagnerrdemorais.poll.controller.form.*;
 import com.wagnerrdemorais.poll.dto.PollDto;
 import com.wagnerrdemorais.poll.dto.PollOptionDto;
 import org.junit.jupiter.api.Test;
@@ -207,7 +204,7 @@ class PollControllerTest extends ControllerTestHelper {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":false,\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
         assertEquals(expected, response);
 
         String expected1 = "[]";
@@ -220,9 +217,24 @@ class PollControllerTest extends ControllerTestHelper {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String expec = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]},{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        String expec = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":false,\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]},{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":false,\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
 
         assertEquals(expec, myPolls);
+
+        String updated = runRequireAuth(mockMvc, List.of(1L), jwtToken)
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String exp2 = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":true,\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+
+        assertEquals(exp2, updated);
+
+        VoteForm voteForm = new VoteForm(1L, "test");
+        runNewVote(mockMvc, voteForm)
+                .andExpect(status().is(401));
+
+        runNewVote(mockMvc, voteForm, jwtToken)
+                .andExpect(status().isOk());
     }
 
     private ResultActions runGetById(String id) throws Exception {

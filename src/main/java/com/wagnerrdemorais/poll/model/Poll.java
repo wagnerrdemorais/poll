@@ -18,6 +18,8 @@ public class Poll {
 
     private String description;
 
+    private boolean requireAuth;
+
     @ManyToOne
     private User user;
 
@@ -41,12 +43,13 @@ public class Poll {
      * @param description String
      * @param optionList  List<PollOption>
      */
-    public Poll(Long id, String title, String description, List<PollOption> optionList, User user) {
+    public Poll(Long id, String title, String description, List<PollOption> optionList, User user, boolean requireAuth) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.optionList = optionList;
         this.user = user;
+        this.requireAuth = requireAuth;
     }
 
     public Long getId() {
@@ -83,6 +86,14 @@ public class Poll {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean getRequireAuth() {
+        return requireAuth;
+    }
+
+    public void setRequireAuth(boolean requireAuth) {
+        this.requireAuth = requireAuth;
     }
 }
 

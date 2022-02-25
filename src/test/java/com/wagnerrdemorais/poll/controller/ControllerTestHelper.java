@@ -7,6 +7,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -29,9 +31,21 @@ public abstract class ControllerTestHelper {
                 .accept(MediaType.APPLICATION_JSON));
     }
 
+    ResultActions runLogout(MockMvc mockMvc) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.get("/logout"));
+    }
+
     ResultActions runUpdatePoll(MockMvc mockMvc, PollForm updatedForm) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.put("/polls/update")
                 .content(objectAsJsonString(updatedForm))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    ResultActions runRequireAuth(MockMvc mockMvc, List<Long> pollIds, String token) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.put("/polls/requireAuth")
+                .header("authorization", "Bearer " + token)
+                .content(objectAsJsonString(pollIds))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
     }
@@ -50,6 +64,14 @@ public abstract class ControllerTestHelper {
 
     ResultActions runNewVote(MockMvc mockMvc, VoteForm content) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.post("/votes/newVote")
+                .content(objectAsJsonString(content))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    ResultActions runNewVote(MockMvc mockMvc, VoteForm content, String token) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.post("/votes/newVote")
+                .header("authorization", "Bearer " + token)
                 .content(objectAsJsonString(content))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));

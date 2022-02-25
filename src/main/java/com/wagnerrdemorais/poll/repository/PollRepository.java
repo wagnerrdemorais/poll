@@ -11,5 +11,8 @@ import java.util.List;
  */
 @Repository
 public interface PollRepository extends JpaRepository<Poll, Long> {
+
     List<Poll> findAllByUserId(Long userId);
+
+    List<Poll> findAllByIdInAndUserId(List<Long> ids, Long userId);
 }

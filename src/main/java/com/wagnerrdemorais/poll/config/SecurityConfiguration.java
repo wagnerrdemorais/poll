@@ -54,12 +54,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/claimPolls").authenticated()
                 .antMatchers("/myPolls").authenticated()
+                .antMatchers("/requireAuth").authenticated()
                 .antMatchers("/**").permitAll()
                 .and().sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
                 .addFilterBefore(new AuthenticationTokenFilter(tokenService, userRepository),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CustomFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .permitAll();
     }
 
     /**

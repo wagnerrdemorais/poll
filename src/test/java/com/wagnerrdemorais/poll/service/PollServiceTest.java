@@ -48,7 +48,7 @@ class PollServiceTest extends RepoTestHelper {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
                         new PollOption(6L, "Option2", new ArrayList<>())),
-                null);
+                null, false);
 
         Poll savedPoll = subject.savePoll(pollToSave);
         assertEquals(pollToSave, savedPoll);
@@ -62,7 +62,7 @@ class PollServiceTest extends RepoTestHelper {
         Poll pollToSave = new Poll(5L, "Test", "TestDescription",
                 List.of(new PollOption(5L, "ChooseTest", new ArrayList<>()),
                         new PollOption(6L, "Option2", new ArrayList<>())),
-                null);
+                null, false);
         subject.savePoll(pollToSave);
 
         Poll pollById = subject.getPollById(5L);
@@ -112,12 +112,12 @@ class PollServiceTest extends RepoTestHelper {
                 new Poll(1L, "Poll1", "Poll1 Description",
                         List.of(new PollOption(1L, "Option1", new ArrayList<>()),
                                 new PollOption(2L, "Option2", new ArrayList<>())),
-                        new User(1L, "user", "user")),
+                        new User(1L, "user", "user"), false),
                 2L,
                 new Poll(2L, "Poll2", "Poll2 Description",
                         List.of(new PollOption(3L, "Option3", new ArrayList<>()),
                                 new PollOption(4L, "Option4", new ArrayList<>())),
-                        null)
+                        null, false)
         ));
     }
 }

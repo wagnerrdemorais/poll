@@ -21,7 +21,7 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void listUsers() throws Exception {
+    void givenAListOfUsers_whenGetUserList_thenTheListShouldBeReturned() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -30,7 +30,14 @@ class UserControllerTest extends ControllerTestHelper {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        String expected = "[{\"id\":1,\"username\":\"test\"}]";
+        newUserForm.setUsername("test1");
+        newUserForm.setPassword("test1");
+
+        runNewUser(mockMvc, objectAsJsonString(newUserForm))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String expected = "[{\"id\":1,\"username\":\"test\"},{\"id\":2,\"username\":\"test1\"}]";
         String response = runGetUserList(mockMvc).andReturn().getResponse().getContentAsString();
 
         Assertions.assertEquals(expected, response);
@@ -38,7 +45,7 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void getUser() throws Exception {
+    void givenNewUser_whenGetUserById_thenUserShouldBeReturned() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -55,7 +62,7 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void newUser() throws Exception {
+    void givenNoUsers_whenRunNewUser_thenUserShouldBeCreated() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -70,7 +77,7 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void updateUser() throws Exception {
+    void givenUser_whenUpdateUser_thenUserShouldBeUpdated() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -94,7 +101,7 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void deleteUserById() throws Exception {
+    void givenUser_whenDeleteUserById_thenUserShouldBeDeleted() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -121,14 +128,14 @@ class UserControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void getWrongUser() throws Exception {
+    void givenNoUsers_whenGetUserById_thenShouldRespondBadRequest() throws Exception {
         runGetUserById(mockMvc, "1").andExpect(status().isBadRequest());
 
     }
 
     @Test
     @DirtiesContext
-    void deleteWrongUser() throws Exception {
+    void givenNoUsers_whenDeleteUserById_thenShouldRespondBadRequest() throws Exception {
         runDeleteUser(mockMvc, "1").andExpect(status().isBadRequest());
     }
 }

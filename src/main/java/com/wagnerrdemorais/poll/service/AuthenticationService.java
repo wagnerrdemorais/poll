@@ -9,15 +9,28 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Service for authentication operations
+ */
 @Service
 public class AuthenticationService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * All args constructor
+     * @param userRepository UserRepository
+     */
     public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Find user by username and return its details
+     * @param username String
+     * @return UserDetails
+     * @throws UsernameNotFoundException UNFE
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = userRepository.findByUsername(username);

@@ -45,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /**
      * HttpSecurity configurations, with filter for jwt token
+     *
      * @param httpSecurity HttpSecurity
      * @throws Exception E
      */
@@ -57,11 +58,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/requireAuth").authenticated()
                 .antMatchers("/**").permitAll()
                 .and().sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
                 .addFilterBefore(new AuthenticationTokenFilter(tokenService, userRepository),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new CustomFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                 .logout()
                 .permitAll();
@@ -69,6 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /**
      * enables resources for api-docs, html files and swagger-resources
+     *
      * @param web WebSecurity
      */
     @Override

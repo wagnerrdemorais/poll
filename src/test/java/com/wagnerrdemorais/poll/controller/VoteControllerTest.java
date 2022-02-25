@@ -24,7 +24,7 @@ class VoteControllerTest extends ControllerTestHelper {
 
     @Test
     @DirtiesContext
-    void vote() throws Exception {
+    void givenNewPoll_whenVoting_thenVoteShouldBeSaved() throws Exception {
         runAddPoll(mockMvc, createTestPollForm())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

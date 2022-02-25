@@ -10,10 +10,8 @@ import com.wagnerrdemorais.poll.repository.UserRepository;
 import com.wagnerrdemorais.poll.repository.VoteRepository;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -55,8 +53,11 @@ public abstract class RepoTestHelper {
         mockPollRepoFindAll();
         mockPollRepoGetById();
         mockPollRepoSave();
+        mockPollRepoSaveAll();
         mockPollRepoDeleteById();
         mockPollRepoExistsById();
+        mockPollRepoFindAllByUserId();
+        mockPollRepoFindAllByIdInAndUserId();
     }
 
     /**
@@ -152,6 +153,16 @@ public abstract class RepoTestHelper {
         });
     }
 
+    void mockPollRepoSaveAll() {
+        when(pollRepository.saveAll(Mockito.<List<Poll>>any())).thenAnswer(invocationOnMock -> {
+            List<Poll> pollList = (List<Poll>) invocationOnMock.getArguments()[0];
+
+            pollList.forEach(poll -> pollMap.put(poll.getId(), poll));
+
+            return new ArrayList<>(pollMap.values());
+        });
+    }
+
     void mockPollRepoDeleteById() {
         doAnswer(invocationOnMock -> {
             Long id = (Long) invocationOnMock.getArguments()[0];
@@ -164,6 +175,27 @@ public abstract class RepoTestHelper {
         when(pollRepository.existsById(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
             Long argument = (Long) invocationOnMock.getArguments()[0];
             return pollMap.containsKey(argument);
+        });
+    }
+
+    void mockPollRepoFindAllByUserId() {
+        when(pollRepository.findAllByUserId(Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
+            Long argument = (Long) invocationOnMock.getArguments()[0];
+            return pollMap.values().stream()
+                    .filter(poll -> poll.getUser() != null && poll.getUser().getId().equals(argument))
+                    .collect(Collectors.toList());
+        });
+    }
+
+    void mockPollRepoFindAllByIdInAndUserId() {
+        when(pollRepository.findAllByIdInAndUserId(Mockito.<List<Long>>any(), Mockito.any(Long.class))).thenAnswer(invocationOnMock -> {
+            List<Long> ids = (List<Long>) invocationOnMock.getArguments()[0];
+            Long userId = (Long) invocationOnMock.getArguments()[1];
+
+            return pollMap.values().stream()
+                    .filter(poll -> (poll.getUser() != null && poll.getUser().getId().equals(userId))
+                            && ids.contains(poll.getId()))
+                    .collect(Collectors.toList());
         });
     }
 

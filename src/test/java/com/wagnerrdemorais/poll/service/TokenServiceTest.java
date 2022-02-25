@@ -45,6 +45,12 @@ class TokenServiceTest {
     }
 
     @Test
+    void givenInvalidToken_whenValidating_thenShouldReturnFalse() {
+        boolean valid = subject.isValid("falseToken");
+        Assertions.assertFalse(valid);
+    }
+
+    @Test
     void givenToken_whenGetUserId_thenShouldReturnUserId() {
         User user = new User(1L, "test", "test");
 

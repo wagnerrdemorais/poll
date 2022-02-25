@@ -54,6 +54,10 @@ public class VoteController {
     public ResponseEntity<VoteDto> vote(@RequestBody VoteForm voteForm) {
         Long optionId = voteForm.getOptionId();
 
+        if (voteForm.getVoteId() != null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         PollOption pollOption = pollOptionService.getById(optionId);
         boolean requireAuth = pollOption.getPoll().getRequireAuth();
 
@@ -64,9 +68,6 @@ public class VoteController {
             }
         }
 
-        if (voteForm.getVoteId() != null) {
-            return ResponseEntity.badRequest().build();
-        }
         Vote vote = voteService.saveVote(voteForm);
         VoteDto voteDto = new VoteDto(vote.getId(), vote.getOpinion(), vote.getPollOption().getId());
         return ResponseEntity.ok(voteDto);

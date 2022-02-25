@@ -1,5 +1,8 @@
 package com.wagnerrdemorais.poll.controller.form;
 
+/**
+ * Form used in controller for login in
+ */
 public class LoginForm {
 
     private String username;

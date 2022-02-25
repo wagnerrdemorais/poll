@@ -68,6 +68,11 @@ public class VoteService {
         return vote;
     }
 
+    /**
+     * Return Vote for given id if found
+     * @param id Long
+     * @return Vote
+     */
     public Vote getVoteById(Long id) {
         return this.voteRepository.getById(id);
     }

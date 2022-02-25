@@ -29,7 +29,7 @@ public class PollService {
      *
      * @param pollRepository   PollRepository
      * @param optionRepository OptionRepository
-     * @param userRepository
+     * @param userRepository UserRepository
      */
     public PollService(PollRepository pollRepository, OptionRepository optionRepository, UserRepository userRepository) {
         this.pollRepository = pollRepository;
@@ -124,15 +124,31 @@ public class PollService {
         return poll;
     }
 
+    /**
+     * Check if given poll has user
+     * @param pollId Long
+     * @return boolean
+     */
     public boolean hasUser(Long pollId) {
         Poll poll = pollRepository.getById(pollId);
         return poll.getUser() != null;
     }
 
+    /**
+     * Return Poll List for given user id
+     * @param userId Long
+     * @return List<Poll>
+     */
     public List<Poll> findAllByUserId(Long userId) {
         return pollRepository.findAllByUserId(userId);
     }
 
+    /**
+     * Given poll id list and user id return matching poll list
+     * @param ids List<Long>
+     * @param userId Long
+     * @return List<Poll>
+     */
     public List<Poll> findAllByIdInAndUserId(List<Long> ids, Long userId) {
         return pollRepository.findAllByIdInAndUserId(ids, userId);
     }
@@ -159,6 +175,11 @@ public class PollService {
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * Saves all given polls
+     * @param pollList List<Poll>
+     * @return List<Poll>
+     */
     public List<Poll> saveAll(List<Poll> pollList) {
         return pollRepository.saveAll(pollList);
     }

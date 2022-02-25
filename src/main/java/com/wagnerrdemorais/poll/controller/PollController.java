@@ -84,6 +84,10 @@ public class PollController {
         return ResponseEntity.ok(pollDto);
     }
 
+    /**
+     * Enable the user to claim all polls without user
+     * @return ResponseEntity<List<PollDto>>
+     */
     @PutMapping("/claimPolls")
     public ResponseEntity<List<PollDto>> claimPolls() {
 
@@ -108,6 +112,10 @@ public class PollController {
         return ResponseEntity.ok(pollDtoList);
     }
 
+    /**
+     * Return the pollList for given authenticated user
+     * @return ResponseEntity<List<PollDto>>
+     */
     @GetMapping("/myPolls")
     public ResponseEntity<List<PollDto>> myPools() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -170,6 +178,11 @@ public class PollController {
                 }).collect(Collectors.toList());
     }
 
+    /**
+     * Get list of polls by user id
+     * @param userId Long
+     * @return ResponseEntity<List<PollDto>>
+     */
     @GetMapping("/listByUserId")
     public ResponseEntity<List<PollDto>> getListByUserId(Long userId) {
         if (userId == null || !userService.userExistsById(userId)) {
@@ -187,6 +200,10 @@ public class PollController {
         return ResponseEntity.ok(pollDtoList);
     }
 
+    /**
+     * Returns a list of polls with no user
+     * @return ResponseEntity<List<PollDto>>
+     */
     @GetMapping("/listWithoutUser")
     public ResponseEntity<List<PollDto>> listWithoutUser() {
 
@@ -201,9 +218,20 @@ public class PollController {
         return ResponseEntity.ok(pollDtoList);
     }
 
+    /**
+     * Changes given list of polls to require authentication for voting
+     * @param pollIds List<Long>
+     * @return ResponseEntity<List<PollDto>>
+     */
     @PutMapping("/requireAuth")
     public ResponseEntity<List<PollDto>> requireAuth(@RequestBody List<Long> pollIds) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user;
+        if (principal instanceof User) {
+            user = (User) principal;
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         List<Poll> pollList = pollService.findAllByIdInAndUserId(pollIds, user.getId());
 

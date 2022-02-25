@@ -127,8 +127,14 @@ class PollControllerTest extends ControllerTestHelper {
     }
 
     @Test
+    void givenNoUser_whenGetByUserId_thenShouldReturnBadRequest() throws Exception {
+        runGetPollByUserId(mockMvc, "1")
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DirtiesContext
-    void test() throws Exception {
+    void givenNewPollWithUser_whenGetPollByUserId_thenPollShouldBeReturned() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -144,13 +150,20 @@ class PollControllerTest extends ControllerTestHelper {
                 .andExpect(status().isOk()).andReturn()
                 .getResponse().getContentAsString();
 
-        String expected = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        String expected = "[{\"id\":1,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":false,\"optionList\":[{\"id\":1,\"title\":\"TestOption\",\"voteList\":[]}]}]";
         assertEquals(expected, response);
     }
 
     @Test
     @DirtiesContext
-    void test1() throws Exception {
+    void givenWrongToken_whenRequireAuth_souldReturnBadRequest() throws Exception {
+        runRequireAuth(mockMvc, List.of(1L), "jwtToken")
+                .andExpect(status().is(401));
+    }
+
+    @Test
+    @DirtiesContext
+    void givenPollListWithAndWithoutUser_whenGetListWithoutUser_thenShouldReturnOnlyPollsWithoutUser() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");
@@ -170,13 +183,26 @@ class PollControllerTest extends ControllerTestHelper {
                 .andExpect(status().isOk()).andReturn()
                 .getResponse().getContentAsString();
 
-        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
+        String expected = "[{\"id\":2,\"title\":\"TestTitle\",\"description\":\"TestDescription\",\"requireAuth\":false,\"optionList\":[{\"id\":2,\"title\":\"TestOption\",\"voteList\":[]}]}]";
         assertEquals(expected, response);
     }
 
     @Test
     @DirtiesContext
-    void test2() throws Exception {
+    void givenWrongToken_whenClaimPolls_thenShouldRespondWithUnauthorized() throws Exception {
+        runClaimPolls(mockMvc, "jwtToken")
+                .andExpect(status().is(401));
+    }
+
+    /**
+     * Creates a list of polls with user, and requiring authentication,
+     * when voting without authentication, should return unauthorized
+     * when voting with authentication, should return okay
+     * @throws Exception E
+     */
+    @Test
+    @DirtiesContext
+    void flow_test() throws Exception {
         NewUserForm newUserForm = new NewUserForm();
         newUserForm.setUsername("test");
         newUserForm.setPassword("test");

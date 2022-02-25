@@ -1,5 +1,8 @@
 package com.wagnerrdemorais.poll.controller.form;
 
+/**
+ * Form for updating user info
+ */
 public class UpdateUserForm {
 
     Long id;

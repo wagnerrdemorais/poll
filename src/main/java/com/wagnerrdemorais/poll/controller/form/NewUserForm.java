@@ -1,5 +1,8 @@
 package com.wagnerrdemorais.poll.controller.form;
 
+/**
+ * Form used when creating new user
+ */
 public class NewUserForm {
 
     String username;

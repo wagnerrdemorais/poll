@@ -1,5 +1,7 @@
 package com.wagnerrdemorais.poll.service;
 
+import com.wagnerrdemorais.poll.controller.form.PollForm;
+import com.wagnerrdemorais.poll.controller.form.PollOptionForm;
 import com.wagnerrdemorais.poll.model.Poll;
 import com.wagnerrdemorais.poll.model.PollOption;
 import com.wagnerrdemorais.poll.model.User;
@@ -95,13 +97,85 @@ class PollServiceTest extends RepoTestHelper {
         assertFalse(subject.hasUser(2L));
     }
 
-    //TODO mock findAllByuserId in repo
-//    @Test
+    @Test
     void givenPollWithUser_whenGetPollListByUser_thenShouldReturnPollList() {
         createsInitialDataForPollRepo();
         List<Poll> poolListByUserId = subject.findAllByUserId(1L);
         assertEquals(1L, poolListByUserId.size());
     }
+
+    @Test
+    void givenPollWithUser_whenGetPollListByIdInAndUserId_thenShouldReturnPollList() {
+        createsInitialDataForPollRepo();
+        List<Poll> poolListByUserId = subject.findAllByIdInAndUserId(List.of(1L),1L);
+        assertEquals(1L, poolListByUserId.size());
+    }
+
+    @Test
+    void givenPollInRepo_whenSavePollWithForm_thenPollShouldBeSaved() {
+        User user = new User(1L, "testUser", "testPass");
+        userMap.put(1L, user);
+
+        PollOption pollOption = new PollOption(1L, "testOption", new ArrayList<>());
+        optionMap.put(1L, pollOption);
+
+        PollOptionForm pollOptionForm = new PollOptionForm();
+        pollOptionForm.setId(1L);
+        pollOptionForm.setTitle("test");
+
+        PollForm pollForm = new PollForm();
+        pollForm.setId(1L);
+        pollForm.setUserId(1L);
+        pollForm.setTitle("test");
+        pollForm.setDescription("test");
+        pollForm.setOptionList(List.of(pollOptionForm));
+        pollForm.setUserId(1L);
+
+        Poll poll = subject.savePoll(pollForm);
+
+        assertEquals(1L, poll.getId());
+        assertEquals("test", poll.getOptionList().get(0).getTitle());
+    }
+
+    @Test
+    void givenNewPoll_whenSavePoll_thenPollShouldBeSaved() {
+        User user = new User(1L, "testUser", "testPass");
+        userMap.put(1L, user);
+
+        PollOptionForm pollOptionForm = new PollOptionForm();
+        pollOptionForm.setTitle("test");
+
+        PollForm pollForm = new PollForm();
+        pollForm.setUserId(1L);
+        pollForm.setTitle("test");
+        pollForm.setDescription("test");
+        pollForm.setOptionList(List.of(pollOptionForm));
+        pollForm.setUserId(1L);
+
+        Poll poll = subject.savePoll(pollForm);
+
+        assertNotNull(poll);
+        assertEquals("test", poll.getOptionList().get(0).getTitle());
+    }
+
+    @Test
+    void givenAListOfPolls_whenSaveAll_thenShouldReturnTheSavedList() {
+        List<Poll> pollList = List.of(
+                new Poll(1L, "Poll1", "Poll1 Description",
+                        List.of(new PollOption(1L, "Option1", new ArrayList<>()),
+                                new PollOption(2L, "Option2", new ArrayList<>())),
+                        new User(1L, "user", "user"), false),
+                new Poll(2L, "Poll2", "Poll2 Description",
+                        List.of(new PollOption(3L, "Option3", new ArrayList<>()),
+                                new PollOption(4L, "Option4", new ArrayList<>())),
+                        null, false)
+        );
+
+        List<Poll> savedList = subject.saveAll(pollList);
+
+        assertEquals(2L, savedList.size());
+    }
+
 
     /**
      * Initializes pollMap with test data

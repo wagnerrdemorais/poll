@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/**
+ * Service for JWTToken operations
+ */
 @Service
 public class TokenService {
 
@@ -19,6 +22,11 @@ public class TokenService {
     @Value("${test.jwt.secret}")
     private String secret;
 
+    /**
+     * Generates a token for given authentication object
+     * @param authentication  Authentication
+     * @return String
+     */
     public String generateToken(Authentication authentication) {
 
         User user = (User) authentication.getPrincipal();
@@ -36,6 +44,11 @@ public class TokenService {
                 .compact();
     }
 
+    /**
+     * Check if given token is valid
+     * @param token String
+     * @return boolean
+     */
     public boolean isValid(String token) {
         try {
             Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
@@ -45,6 +58,11 @@ public class TokenService {
         }
     }
 
+    /**
+     * Return userId from given token
+     * @param token String
+     * @return Long
+     */
     public Long getUserId(String token) {
         Claims body = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
         return Long.parseLong(body.getSubject());
